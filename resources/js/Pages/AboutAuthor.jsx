@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
-import { Facebook, Instagram, Menu, Music4, Send, X, Youtube } from 'lucide-react';
+import MobileMenuOverlay from '../Components/MobileMenuOverlay';
+import SiteFooter from '../Components/SiteFooter';
 
 export default function AboutAuthor() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -15,13 +16,13 @@ export default function AboutAuthor() {
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center justify-center gap-8 md:gap-12">
                         <a
-                            href="#"
+                            href="/gallery"
                             className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
                         >
-                            Պատկերասրահ
+                            պատկերասրահ
                         </a>
                         <a
-                            href="#"
+                            href="/#discussions"
                             className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
                         >
                             Քննարկումների սենյակ
@@ -33,7 +34,7 @@ export default function AboutAuthor() {
                             Հեղինակի մասին
                         </a>
                         <a
-                            href="#"
+                            href="/about-author#contact"
                             className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
                         >
                             Կապ
@@ -41,64 +42,53 @@ export default function AboutAuthor() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden flex justify-end">
+                    <div className="md:hidden flex items-center justify-between">
+                        <h1 className="text-white text-2xl font-semibold tracking-wide">
+                            ՀԵՂԻՆԱԿԻ ՄԱՍԻՆ
+                        </h1>
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md hover:bg-white/10"
+                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md"
                             aria-label="Toggle menu"
                         >
-                            {isMobileMenuOpen ? (
-                                <X className="w-6 h-6" />
-                            ) : (
-                                <Menu className="w-6 h-6" />
-                            )}
+                            <svg width="40" height="40" viewBox="0 0 112 117" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_4074_686)">
+                                    <circle cx="56" cy="56" r="56" fill="#DB3106" />
+                                    <rect x="28" y="45" width="56.7871" height="8.34043" fill="white" />
+                                    <rect x="28" y="59" width="56.7871" height="8.34043" fill="white" />
+                                </g>
+                                <defs>
+                                    <filter id="filter0_d_4074_686" x="0" y="0" width="112" height="117" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                        <feOffset dy="5" />
+                                        <feComposite in2="hardAlpha" operator="out" />
+                                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8 0" />
+                                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4074_686" />
+                                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4074_686" result="shape" />
+                                    </filter>
+                                </defs>
+                            </svg>
                         </button>
                     </div>
                 </div>
-
-                {/* Mobile Menu Dropdown */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden mt-4 bg-black/80 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden">
-                        <div className="flex flex-col">
-                            <a
-                                href="#"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 border-b border-white/10 hover:bg-white/10"
-                            >
-                                Պատկերասրահ
-                            </a>
-                            <a
-                                href="#"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 border-b border-white/10 hover:bg-white/10"
-                            >
-                                Քննարկումների սենյակ
-                            </a>
-                            <a
-                                href="/about-author"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 hover:bg-white/10"
-                            >
-                                Հեղինակի մասին
-                            </a>
-                        </div>
-                    </div>
-                )}
             </nav>
+
+            <MobileMenuOverlay isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             {/* Main Content - About Author layout */}
             <main className="bg-white py-16 md:py-20">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Author name title */}
                     <h1 className="text-center font-bokonique text-4xl md:text-5xl lg:text-6xl text-black mb-12 tracking-wide">
-                        ՆԱՐԷ ԱՐԻՍ
+                        ՆԱՐԵ ԱՐԻՍ
                     </h1>
 
                     {/* Author intro: image (left) + text (right) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start mb-16">
                         {/* Left: author image */}
                         <div className="w-full md:order-1">
-                            <div className="rounded-[24px] overflow-hidden border border-black/10 shadow-md">
+                            <div className="overflow-hidden">
                                 <img
                                     src="/images/author.png"
                                     alt="Նարէ Արիս"
@@ -130,38 +120,39 @@ export default function AboutAuthor() {
                     </div>
 
                     {/* Contact form title */}
-                    <h2 className="font-bokonique text-2xl md:text-3xl text-black mb-4">
-                        Կապվիր ինձ հետ
+                    <h2 id="contact" className="font-bokonique text-center md:text-left text-2xl md:text-3xl text-black mb-4">
+                        ԿԱՊՎԻՐ ԻՆՁ ՀԵՏ
                     </h2>
 
                     {/* Contact form card */}
                     <section className="bg-[#DB3106] rounded-[32px] px-6 sm:px-10 py-10 sm:py-12 text-black">
-                        <form className="space-y-4 max-w-2xl mx-auto">
+                        <form className="space-y-4 max-w-4xl mx-auto">
                             <input
                                 type="text"
                                 placeholder="Անուն, ազգանուն"
-                                className="w-full rounded-[12px] bg-[#FEEFE9] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
+                                className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
                             <input
                                 type="text"
                                 placeholder="Քեզ հոգնող կարծիքը"
-                                className="w-full rounded-[12px] bg-[#FEEFE9] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
+                                className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
                             <input
                                 type="email"
                                 placeholder="@էլ ․ հասցե"
-                                className="w-full rounded-[12px] bg-[#FEEFE9] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
+                                className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
                             <textarea
                                 rows={5}
                                 placeholder="Նամակ գրի այստեղ..."
-                                className="w-full rounded-[12px] bg-[#FEEFE9] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30 resize-none"
+                                className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30 resize-none"
                             />
 
                             <div className="pt-4 flex justify-center">
                                 <button
                                     type="submit"
-                                    className="inline-flex items-center justify-center px-10 py-3 rounded-full bg-white border-2 border-black text-black font-bokonique text-sm md:text-base tracking-wide shadow-md hover:bg-[#FEEFE9] transition-colors"
+                                    className="inline-flex items-center justify-center px-15 py-3 rounded-full bg-white text-black font-bokonique text-sm md:text-base tracking-wide hover:bg-[#FEEFE9] transition-colors"
+                                    style={{ boxShadow: '-3px 4px 0 2px rgba(0, 0, 0, 0.85)' }}
                                 >
                                     ՈւՂԱՐԿԵԼ
                                 </button>
@@ -171,100 +162,7 @@ export default function AboutAuthor() {
                 </div>
             </main>
 
-            {/* Shared footer from Welcome page */}
-            <footer className="relative bg-[#DB3106] text-white py-12 overflow-hidden">
-                <div className="max-w-8xl mx-auto px-20 sm:px-20 lg:px-20">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                        {/* Footer Content */}
-                        <div>
-                            <nav className="space-y-5">
-                                <a href="/about-author" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Հեղինակի մասին
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Պատկերասրահ
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Քննարկումների սենյակ
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Կապ
-                                </a>
-                            </nav>
-                        </div>
-
-                        {/* Email Subscription - Center */}
-                        <div className="flex justify-center md:w-[434px]">
-                            <div className="flex flex-col">
-                                <form className="w-full max-w-md">
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="email"
-                                            placeholder="Գրանցվի՛ր, որ նորություններից հետ չմնաս"
-                                            className="w-full px-4 py-3 pr-12 rounded-full bg-white backdrop-blur-sm border border-white/20 text-black placeholder-black/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all placeholder:text-sm"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="absolute right-2 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                                            aria-label="Submit email"
-                                        >
-                                            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M1.80811 15.5L9.55811 7.75L1.80811 0L-0.000227694 1.80833L5.94144 7.75L-0.000227694 13.6917L1.80811 15.5Z" fill="black" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </form>
-
-                                {/* Social icons */}
-                                <div className="mt-10 flex items-center gap-3">
-                                    <a
-                                        href="#"
-                                        aria-label="Instagram"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Instagram className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        aria-label="Telegram"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Send className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        aria-label="TikTok"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Music4 className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        aria-label="Facebook"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Facebook className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="#"
-                                        aria-label="YouTube"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Youtube className="w-6 h-6" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Simple copyright */}
-                        <div className="flex items-end justify-end">
-                            <p className="text-sm opacity-90">
-                                Copyright © {new Date().getFullYear()} © All Rights Reserved By Naré Arist
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <SiteFooter />
         </>
     );
 }

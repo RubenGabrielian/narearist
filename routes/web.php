@@ -10,3 +10,7 @@ Route::get('/', function () {
 Route::get('/about-author', function () {
     return Inertia::render('AboutAuthor');
 })->name('about-author');
+
+Route::get('/gallery', function () {
+    return Inertia::render('Gallery');
+})->name('gallery');

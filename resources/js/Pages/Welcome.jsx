@@ -15,12 +15,9 @@ import {
     RotateCcw,
     Menu,
     ArrowRight,
-    Send,
-    Instagram,
-    Facebook,
-    Youtube,
-    Music4,
 } from 'lucide-react';
+import MobileMenuOverlay from '../Components/MobileMenuOverlay';
+import SiteFooter from '../Components/SiteFooter';
 
 const CHAPTER_STORAGE_KEY = 'welcome-current-chapter';
 
@@ -31,12 +28,9 @@ export default function Welcome() {
         const num = saved ? parseInt(saved, 10) : 1;
         return Number.isNaN(num) ? 1 : num;
     });
-    const footerRef = useRef(null);
     const [showChapterList, setShowChapterList] = useState(false);
-    const [ballPosition, setBallPosition] = useState({ x: 0, y: 0, rotation: 0 });
     const chapterListRef = useRef(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [email, setEmail] = useState('');
     const [showTelegramIcon, setShowTelegramIcon] = useState(true);
     const [typingDots, setTypingDots] = useState('');
     const [showTelegramBlock, setShowTelegramBlock] = useState(true);
@@ -96,14 +90,16 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
     const totalChapters = Object.keys(chapters).length;
 
     const goToPreviousChapter = () => {
-        setCurrentChapter((prev) => (prev === 1 ? totalChapters : prev - 1));
+        setCurrentChapter((prev) => (prev > 1 ? prev - 1 : prev));
     };
 
     const goToNextChapter = () => {
-        setCurrentChapter((prev) => (prev === totalChapters ? 1 : prev + 1));
+        setCurrentChapter((prev) => (prev < totalChapters ? prev + 1 : prev));
     };
 
     const currentChapterData = chapters[currentChapter];
+    const isFirstChapter = currentChapter === 1;
+    const isLastChapter = currentChapter === totalChapters;
 
     // Persist chapter so it survives re-renders/remounts (e.g. when modal closes)
     useEffect(() => {
@@ -221,16 +217,6 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const handleEmailSubmit = (e) => {
-        e.preventDefault();
-        if (email.trim()) {
-            // TODO: Add email registration logic here
-            console.log('Email registered:', email);
-            setEmail('');
-            // You can add a success message or API call here
-        }
-    };
-
     const changePlaybackSpeed = () => {
         const currentIndex = speedOptions.indexOf(playbackSpeed);
         const nextIndex = (currentIndex + 1) % speedOptions.length;
@@ -257,13 +243,11 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
     // Close mobile menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            const nav = event.target.closest('nav');
-            if (isMobileMenuOpen && nav && !nav.querySelector('button[aria-label="Toggle menu"]')?.contains(event.target)) {
-                // Only close if clicking outside the menu items
-                if (!nav.querySelector('.bg-black\\/80')?.contains(event.target)) {
-                    setIsMobileMenuOpen(false);
-                }
-            }
+            if (!isMobileMenuOpen) return;
+            const panel = document.querySelector('.mobile-menu-panel');
+            const toggle = document.querySelector('button[aria-label="Toggle menu"]');
+            if (panel?.contains(event.target) || toggle?.contains(event.target)) return;
+            setIsMobileMenuOpen(false);
         };
 
         if (isMobileMenuOpen) {
@@ -302,31 +286,6 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         }
     }, [showTelegramIcon]);
 
-    // Random tennis ball animation
-    useEffect(() => {
-        const updateBallPosition = () => {
-            const randomX = (Math.random() - 0.5) * 30; // Random between -15 and 15
-            const randomY = (Math.random() - 0.5) * 30; // Random between -15 and 15
-            const randomRotation = (Math.random() - 0.5) * 20; // Random between -10 and 10 degrees
-
-            setBallPosition({
-                x: randomX,
-                y: randomY,
-                rotation: randomRotation,
-            });
-        };
-
-        // Initial position
-        updateBallPosition();
-
-        // Update position at random intervals between 1.5 and 3 seconds
-        const interval = setInterval(() => {
-            updateBallPosition();
-        }, 1500 + Math.random() * 1500);
-
-        return () => clearInterval(interval);
-    }, []);
-
     return (
         <>
             <Head title="ԹԵՆԻՍԻ ԱԿԱԴԵՄԻԱ - Welcome" />
@@ -338,10 +297,10 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center justify-center gap-8 md:gap-12">
                         <a
-                            href="#"
+                            href="/gallery"
                             className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
                         >
-                            Պատկերասրահ
+                            պատկերասրահ
                         </a>
                         <a
                             href="#"
@@ -367,68 +326,51 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     <div className="md:hidden flex justify-end">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md hover:bg-white/10"
+                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md"
                             aria-label="Toggle menu"
                         >
-                            {isMobileMenuOpen ? (
-                                <X className="w-6 h-6" />
-                            ) : (
-                                <Menu className="w-6 h-6" />
-                            )}
+                            <svg width="40" height="40" viewBox="0 0 112 117" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_4074_686)">
+                                    <circle cx="56" cy="56" r="56" fill="#DB3106" />
+                                    <rect x="28" y="45" width="56.7871" height="8.34043" fill="white" />
+                                    <rect x="28" y="59" width="56.7871" height="8.34043" fill="white" />
+                                </g>
+                                <defs>
+                                    <filter id="filter0_d_4074_686" x="0" y="0" width="112" height="117" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                        <feOffset dy="5" />
+                                        <feComposite in2="hardAlpha" operator="out" />
+                                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8 0" />
+                                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4074_686" />
+                                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4074_686" result="shape" />
+                                    </filter>
+                                </defs>
+                            </svg>
                         </button>
                     </div>
 
-                    {/* Mobile Menu Dropdown */}
-                    {isMobileMenuOpen && (
-                        <div className="md:hidden mt-4 bg-black/80 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden">
-                            <div className="flex flex-col">
-                                <a
-                                    href="#"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 border-b border-white/10 hover:bg-white/10"
-                                >
-                                    Պատկերասրահ
-                                </a>
-                                <a
-                                    href="#"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 border-b border-white/10 hover:bg-white/10"
-                                >
-                                    Քննարկումների սենյակ
-                                </a>
-                                <a
-                                    href="/about-author"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-white/90 text-base font-medium hover:text-white transition-colors duration-200 px-4 py-3 hover:bg-white/10"
-                                >
-                                    Հեղինակի մասին
-                                </a>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </nav>
+
+            <MobileMenuOverlay isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             {/* Elegant Hero Section */}
             <section className="relative top-[-80px] w-full  overflow-hidden">
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: "url('/images/hero.png')"
+                        backgroundImage: "url('/images/HERO_try_this.png')"
                     }}
                 >
                     <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
                 </div>
 
                 {/* Hero Content */}
-                <div className="relative h-[440px] flex flex-col items-center justify-center px-4">
-                    <div className="text-center max-w-4xl">
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-4 leading-tight tracking-tight">
-                            ԹԵՆԻՍԻ ԱԿԱԴԵՄԻԱ
-                        </h1>
-                    </div>
-                </div>
+                <div className="relative h-[440px] px-4" />
             </section>
+
+
 
             {/* Chapter Navigation - Refined */}
             <section className="top-[-80px] relative mt-10">
@@ -455,23 +397,25 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
                                 </button>
                             </div>
-                            <div className='flex items-center justify-center gap-20 mt-10'>
+                            <div className='flex items-center justify-center gap-10 mt-10'>
                                 <button
                                     onClick={goToPreviousChapter}
-                                    className="p-2.5  transition-all"
+                                    disabled={isFirstChapter}
+                                    className={`p-2.5 transition-all ${isFirstChapter ? 'cursor-not-allowed opacity-80' : ''}`}
                                     aria-label="Previous chapter"
                                 >
-                                    <ChevronLeft className="w-5 h-5 text-slate-700" />
+                                    <ChevronLeft className={`w-5 h-5 ${isFirstChapter ? 'text-slate-400' : 'text-slate-700'}`} />
                                 </button>
-                                <h2 className="text-2xl md:text-3xl font-serif font-semibold text-slate-900 mb-3">
+                                <h2 className="text-2xl md:text-3xl font-serif font-semibold text-slate-900">
                                     {currentChapterData.title}
                                 </h2>
                                 <button
                                     onClick={goToNextChapter}
-                                    className="p-2.5  transition-all"
+                                    disabled={isLastChapter}
+                                    className={`p-2.5 transition-all ${isLastChapter ? 'cursor-not-allowed opacity-80' : ''}`}
                                     aria-label="Next chapter"
                                 >
-                                    <ChevronRight className="w-5 h-5 text-slate-700" />
+                                    <ChevronRight className={`w-5 h-5 ${isLastChapter ? 'text-slate-400' : 'text-slate-700'}`} />
                                 </button>
                             </div>
 
@@ -496,20 +440,12 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     </div>
                 </div>
             </section>
-
-            {/* Chapter List Modal */}
             {showChapterList && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="inset-0 z-50 flex items-center justify-center p-4">
                     {/* Backdrop – only clicking here closes the modal */}
-                    <div
-                        className="absolute inset-0 z-0 bg-black/50"
-                        onClick={() => setShowChapterList(false)}
-                        aria-hidden="true"
-                    />
-
                     {/* Modal Content – above backdrop so chapter clicks hit the list */}
                     <div
-                        className="relative z-10 w-full max-w-md max-h-[80vh] rounded-[32px] shadow-2xl border-[2px] border-black bg-white pt-10 pb-4 overflow-visible"
+                        className="absolute bottom-[160px] z-10 w-full max-w-md max-h-[80vh] rounded-[32px] shadow-2xl border-[2px] border-black bg-white pt-10 pb-4 overflow-visible"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Top close button circle (half outside the modal) */}
@@ -577,16 +513,17 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     </div>
                 </div>
             )}
+            {/* Chapter List Modal */}
 
             {/* Professional Audio Player */}
             <section className="bg-white">
-                <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="rounded-[27px] p-5 border border-slate-200/50" style={{ backgroundColor: '#E5F6E0' }}>
                         {/* Titles */}
                         <div className="mb-5">
-                            <p className="text-sm text-slate-600 font-medium mb-2 text-center">Աուդիոգիրք</p>
+                            <h4 className="text-center text-sm md:text-base font-serif font-bold text-[#575757]">Գլ. {currentChapter}. </h4>
                             <h2 className="text-2xl md:text-xl font-serif font-bold text-slate-900 text-center">
-                                Գլ. {currentChapter}. Ճեղք Ակադեմիայում
+                                Ճեղք Ակադեմիայում
                             </h2>
                         </div>
 
@@ -615,17 +552,16 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             </div>
                         </div>
 
+                        {/* Playback Speed Control */}
+                        <button
+                            onClick={changePlaybackSpeed}
+                            className="absolute left-[70px] bottom-[-40px] p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative min-w-[50px]"
+                            aria-label={`Playback speed: ${playbackSpeed}x`}
+                        >
+                            {playbackSpeed}x
+                        </button>
                         {/* Control Buttons */}
                         <div className="flex items-center justify-center gap-3">
-                            {/* Loop Button */}
-                            <button
-                                onClick={() => setIsLooping(!isLooping)}
-                                className={`p-2 rounded-full transition-colors ${isLooping ? 'bg-slate-700 text-white' : 'bg-transparent text-slate-600 hover:bg-white/50'}`}
-                                aria-label="Toggle loop"
-                            >
-                                <Repeat className="w-5 h-5" />
-                            </button>
-
                             {/* Skip Backward 10s */}
 
 
@@ -635,9 +571,9 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 className="p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative"
                                 aria-label="Previous chapter"
                             >
-                                <svg width="18" height="10" viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.76172 4.8581L17.4768 0V9.7163L8.76172 4.8581Z" fill="black" />
-                                    <path d="M0 4.8581L8.7151 0V9.7163L0 4.8581Z" fill="black" />
+                                <svg width="11" height="10" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 5L11 10V0L2 5Z" fill="black" />
+                                    <rect width="2" height="10" transform="matrix(-1 0 0 1 2 0)" fill="black" />
                                 </svg>
 
                             </button>
@@ -649,8 +585,9 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 <svg width="32" height="31" viewBox="0 0 32 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1.00049 4.55151L2.69062 10.0655L8.30706 8.39984" stroke="black" stroke-width="2" stroke-linecap="round" />
                                     <path d="M2.82561 9.86447C4.07563 6.75339 6.41512 4.18474 9.42149 2.62248C12.4279 1.06022 15.9029 0.607368 19.2189 1.34571C22.5349 2.08405 25.4733 3.96491 27.5033 6.64856C29.5332 9.3322 30.5209 12.6417 30.288 15.9792C30.055 19.3168 28.6168 22.4623 26.233 24.8477C23.8493 27.233 20.6772 28.701 17.2897 28.9863C13.9022 29.2716 10.5227 28.3555 7.76164 26.4035C5.00055 24.4515 3.03992 21.5922 2.23389 18.3422" stroke="black" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M10.3647 18.0869H12.1372V11.9692L10.209 12.356V11.3677L12.1265 10.981H13.2114V18.0869H14.9839V19H10.3647V18.0869ZM17.1914 10.981H21.4507V11.894H18.1851V13.8599C18.3426 13.8062 18.5002 13.7668 18.6577 13.7417C18.8153 13.7131 18.9728 13.6987 19.1304 13.6987C20.0256 13.6987 20.7345 13.944 21.2573 14.4346C21.7801 14.9251 22.0415 15.5894 22.0415 16.4272C22.0415 17.2902 21.7729 17.9616 21.2358 18.4414C20.6987 18.9176 19.9414 19.1558 18.9639 19.1558C18.6273 19.1558 18.2835 19.1271 17.9326 19.0698C17.5853 19.0125 17.2254 18.9266 16.853 18.812V17.7217C17.1753 17.8971 17.5083 18.0278 17.8521 18.1138C18.1958 18.1997 18.5592 18.2427 18.9424 18.2427C19.5618 18.2427 20.0524 18.0798 20.4141 17.7539C20.7757 17.4281 20.9565 16.9858 20.9565 16.4272C20.9565 15.8687 20.7757 15.4264 20.4141 15.1006C20.0524 14.7747 19.5618 14.6118 18.9424 14.6118C18.6523 14.6118 18.3623 14.644 18.0723 14.7085C17.7858 14.7729 17.4922 14.8732 17.1914 15.0093V10.981Z" fill="black" />
+                                    <path d="M9.28955 17.5713H11.1157V12.3882L9.24121 12.7749V11.3677L11.105 10.981H13.0708V17.5713H14.897V19H9.28955V17.5713ZM16.8252 10.981H21.9653V12.501H18.4741V13.7417C18.6317 13.6987 18.7892 13.6665 18.9468 13.645C19.1079 13.62 19.2744 13.6074 19.4463 13.6074C20.4238 13.6074 21.1847 13.8527 21.729 14.3433C22.2733 14.8302 22.5454 15.5106 22.5454 16.3843C22.5454 17.2508 22.2482 17.9294 21.6538 18.4199C21.063 18.9105 20.2412 19.1558 19.1885 19.1558C18.7337 19.1558 18.2826 19.111 17.835 19.0215C17.391 18.9355 16.9487 18.8031 16.5083 18.624V16.9966C16.9451 17.2472 17.3587 17.4352 17.749 17.5605C18.1429 17.6859 18.5135 17.7485 18.8608 17.7485C19.3621 17.7485 19.756 17.6268 20.0425 17.3833C20.3325 17.1362 20.4775 16.8032 20.4775 16.3843C20.4775 15.9618 20.3325 15.6287 20.0425 15.3853C19.756 15.1418 19.3621 15.02 18.8608 15.02C18.5636 15.02 18.2467 15.0594 17.9102 15.1382C17.5736 15.2134 17.2119 15.3315 16.8252 15.4927V10.981Z" fill="black" />
                                 </svg>
+
 
 
                                 {/* <span className="absolute text-xs font-semibold" style={{ fontSize: '10px', lineHeight: '1' }}>10</span> */}
@@ -664,16 +601,18 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             >
                                 {isPlaying ? (
                                     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="15" y="12" width="3" height="14" fill="black" />
                                         <path d="M19 1C28.9411 1 37 9.05887 37 19C37 28.9411 28.9411 37 19 37C9.05887 37 1 28.9411 1 19C1 9.05887 9.05887 1 19 1Z" stroke="black" stroke-width="2" />
-                                        <rect x="15" y="12" width="3" height="13" fill="black" />
-                                        <rect x="20" y="12" width="3" height="13" fill="black" />
+                                        <rect x="20" y="12" width="3" height="14" fill="black" />
                                     </svg>
+
 
                                 ) : (
                                     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M19 1C28.9411 1 37 9.05887 37 19C37 28.9411 28.9411 37 19 37C9.05887 37 1 28.9411 1 19C1 9.05887 9.05887 1 19 1Z" stroke="black" stroke-width="2" />
-                                        <path d="M25.9378 19.069L14.2998 25.7879V12.3501L25.9378 19.069Z" fill="black" />
+                                        <path d="M25.4858 19.2319L14.4858 26.2319V12.2319L25.4858 19.2319Z" fill="black" />
                                     </svg>
+
 
                                 )}
                             </button>
@@ -683,11 +622,12 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 className="p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative"
                                 aria-label="Skip forward 10 seconds"
                             >
-                                <svg width="33" height="31" viewBox="0 0 33 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg width="32" height="31" viewBox="0 0 32 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M30.3208 4.55151L28.6307 10.0655L23.0142 8.39984" stroke="black" stroke-width="2" stroke-linecap="round" />
                                     <path d="M28.4957 9.86447C27.2457 6.75339 24.9062 4.18474 21.8998 2.62248C18.8934 1.06022 15.4184 0.607368 12.1024 1.34571C8.78634 2.08405 5.84798 3.96491 3.81802 6.64856C1.78807 9.3322 0.800359 12.6417 1.03331 15.9792C1.26626 19.3168 2.70451 22.4623 5.08827 24.8477C7.47203 27.233 10.6441 28.701 14.0316 28.9863C17.4191 29.2716 20.7986 28.3555 23.5596 26.4035C26.3207 24.4515 28.2814 21.5922 29.0874 18.3422" stroke="black" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M10.0405 18.592H11.813V12.4744L9.88477 12.8611V11.8728L11.8022 11.4861H12.8872V18.592H14.6597V19.5051H10.0405V18.592ZM16.8672 11.4861H21.1265V12.3992H17.8608V14.365C18.0184 14.3113 18.1759 14.2719 18.3335 14.2468C18.491 14.2182 18.6486 14.2039 18.8062 14.2039C19.7013 14.2039 20.4103 14.4491 20.9331 14.9397C21.4559 15.4303 21.7173 16.0945 21.7173 16.9324C21.7173 17.7953 21.4487 18.4667 20.9116 18.9465C20.3745 19.4228 19.6172 19.6609 18.6396 19.6609C18.3031 19.6609 17.9593 19.6322 17.6084 19.575C17.2611 19.5177 16.9012 19.4317 16.5288 19.3171V18.2268C16.8511 18.4023 17.1841 18.533 17.5278 18.6189C17.8716 18.7048 18.235 18.7478 18.6182 18.7478C19.2376 18.7478 19.7282 18.5849 20.0898 18.259C20.4515 17.9332 20.6323 17.491 20.6323 16.9324C20.6323 16.3738 20.4515 15.9316 20.0898 15.6057C19.7282 15.2799 19.2376 15.1169 18.6182 15.1169C18.3281 15.1169 18.0381 15.1492 17.748 15.2136C17.4616 15.2781 17.168 15.3783 16.8672 15.5144V11.4861Z" fill="black" />
+                                    <path d="M8.60986 17.5713H10.436V12.3882L8.56152 12.7749V11.3677L10.4253 10.981H12.3911V17.5713H14.2173V19H8.60986V17.5713ZM16.1455 10.981H21.2856V12.501H17.7944V13.7417C17.952 13.6987 18.1095 13.6665 18.2671 13.645C18.4282 13.62 18.5947 13.6074 18.7666 13.6074C19.7441 13.6074 20.505 13.8527 21.0493 14.3433C21.5936 14.8302 21.8657 15.5106 21.8657 16.3843C21.8657 17.2508 21.5685 17.9294 20.9741 18.4199C20.3833 18.9105 19.5615 19.1558 18.5088 19.1558C18.054 19.1558 17.6029 19.111 17.1553 19.0215C16.7113 18.9355 16.269 18.8031 15.8286 18.624V16.9966C16.2655 17.2472 16.679 17.4352 17.0693 17.5605C17.4632 17.6859 17.8338 17.7485 18.1812 17.7485C18.6825 17.7485 19.0763 17.6268 19.3628 17.3833C19.6528 17.1362 19.7979 16.8032 19.7979 16.3843C19.7979 15.9618 19.6528 15.6287 19.3628 15.3853C19.0763 15.1418 18.6825 15.02 18.1812 15.02C17.884 15.02 17.5671 15.0594 17.2305 15.1382C16.8939 15.2134 16.5322 15.3315 16.1455 15.4927V10.981Z" fill="black" />
                                 </svg>
+
 
                             </button>
                             {/* Next Chapter */}
@@ -696,24 +636,18 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 className="p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative"
                                 aria-label="Next chapter"
                             >
-                                <svg width="18" height="10" viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.715 4.8581L0 9.7162V0L8.715 4.8581Z" fill="black" />
-                                    <path d="M17.4772 4.8581L8.76221 9.7162V0L17.4772 4.8581Z" fill="black" />
+                                <svg width="11" height="10" viewBox="0 0 11 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L0 10V0L9 5Z" fill="black" />
+                                    <rect x="9" width="2" height="10" fill="black" />
                                 </svg>
+
 
                             </button>
 
                             {/* Skip Forward 10s */}
 
 
-                            {/* Playback Speed Control */}
-                            <button
-                                onClick={changePlaybackSpeed}
-                                className="p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative min-w-[50px]"
-                                aria-label={`Playback speed: ${playbackSpeed}x`}
-                            >
-                                {playbackSpeed}x
-                            </button>
+
                         </div>
                     </div>
 
@@ -733,7 +667,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     <article className="bg-white rounded-2xl overflow-scroll max-h-[800px]">
 
                         {/* Chapter Content - Optimized for Reading */}
-                        <div className="p-8 md:p-12 lg:p-16">
+                        <div className="p-8 md:p-12 lg:p-3">
                             <div className="prose prose-lg prose-slate max-w-none">
                                 <div className="text-slate-800 leading-relaxed text-lg md:text-xl font-serif">
                                     <h3>ԱՊՐԻԼ</h3>
@@ -747,132 +681,12 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             </div>
                         </div>
                     </article>
-                    <p className='ml-15 py-4 text-[#5B5753]'>© Illustrations By Ani Melikyan</p>
+                    <p className='ml-3 py-4 text-[#5B5753]'>© Illustrations By Ani Melikyan</p>
                 </div>
             </section>
 
             {/* Tennis-Themed Footer */}
-            <footer ref={footerRef} className="relative bg-[#DB3106] text-white py-12 overflow-hidden">
-                <div className="max-w-8xl mx-auto px-20 sm:px-20 lg:px-20">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                        {/* Footer Content */}
-                        <div>
-                            <nav className="space-y-5">
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Հեղինակի մասին
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Պատկերասրահ
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Քննարկումների սենյակ
-                                </a>
-                                <a href="#" className="block hover:text-yellow-200 transition-colors text-sm">
-                                    Կապ
-                                </a>
-
-                            </nav>
-                        </div>
-
-                        {/* Email Subscription - Center */}
-                        <div className="flex justify-center md:w-[434px]">
-                            <div className='flex flex-col'>
-                                <form onSubmit={handleEmailSubmit} className="w-full max-w-md">
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="Գրանցվի՛ր, որ նորություններից հետ չմնաս"
-                                            className="w-full px-4 py-3 pr-12 rounded-full bg-white backdrop-blur-sm border border-white/20 text-black placeholder-black/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all placeholder:text-sm"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="absolute right-2 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                                            aria-label="Submit email"
-                                        >
-                                            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M1.80811 15.5L9.55811 7.75L1.80811 0L-0.000227694 1.80833L5.94144 7.75L-0.000227694 13.6917L1.80811 15.5Z" fill="black" />
-                                            </svg>
-
-                                        </button>
-                                    </div>
-                                </form>
-                                <div className="mt-10 flex items-center gap-3">
-                                    {/* Instagram */}
-                                    <a
-                                        href="#"
-                                        aria-label="Instagram"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Instagram className="w-6 h-6" />
-                                    </a>
-
-                                    {/* Telegram (Send icon) */}
-                                    <a
-                                        href="#"
-                                        aria-label="Telegram"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Send className="w-6 h-6" />
-                                    </a>
-
-                                    {/* TikTok (Music4 icon as stylized note) */}
-                                    <a
-                                        href="#"
-                                        aria-label="TikTok"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Music4 className="w-6 h-6" />
-                                    </a>
-
-                                    {/* Facebook */}
-                                    <a
-                                        href="#"
-                                        aria-label="Facebook"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Facebook className="w-6 h-6" />
-                                    </a>
-
-                                    {/* YouTube */}
-                                    <a
-                                        href="#"
-                                        aria-label="YouTube"
-                                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white text-[#DB3106] hover:bg-[#B9EB0C] hover:text-[#DB3106] transition-colors shadow-md"
-                                    >
-                                        <Youtube className="w-6 h-6" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Tennis Ball Animation - Wave */}
-                        <div className="flex flex-col justify-end items-end gap-4 relative">
-                            <div className="relative">
-                                <div className="w-54 h-54 md:w-90 md:h-90 relative">
-                                    {/* Tennis Ball with random animation */}
-                                    <div
-                                        className="absolute inset-0 transition-all duration-1000 ease-out"
-                                        style={{
-                                            transform: `translate(${ballPosition.x}px, ${ballPosition.y}px) rotate(${ballPosition.rotation}deg)`,
-                                        }}
-                                    >
-                                        <img
-                                            src="/tennis-balls.png"
-                                            alt="Tennis ball"
-                                            className="w-full h-full object-contain drop-shadow-2xl"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <p className="text-sm opacity-90" style={{ marginTop: '0px' }}>
-                            Copyright © {new Date().getFullYear()}  © All Rights Reserved By Naré Arist
-                        </p>
-                    </div>
-                </div>
-            </footer>
+            <SiteFooter />
 
             {/* Floating Telegram Block */}
             {showTelegramBlock && (
