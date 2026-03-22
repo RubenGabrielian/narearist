@@ -56,45 +56,74 @@ export default function SiteFooter() {
                     <div className="flex justify-center md:w-[560px]">
                         <div className="flex flex-col">
                             <form onSubmit={handleEmailSubmit} className="w-full max-w-[560px]">
+                               <label htmlFor="" className='mb-5 block'>Գրանցվի՛ր, որ նորություններից հետ չմնաս</label>
                                 <div className="relative flex items-center">
+                                        
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(event) => setEmail(event.target.value)}
-                                        placeholder="Գրանցվի՛ր, որ նորություններից հետ չմնաս"
+                                        placeholder="Էլ. փոստի հասցե"
                                         className="w-full px-6 py-3 pr-12 rounded-full bg-white backdrop-blur-sm border border-white/20 text-black placeholder-black/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all placeholder:text-sm"
                                     />
                                     <button
                                         type="submit"
-                                        className="absolute right-2 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                                        className="absolute right-2  bg-black/10 transition-colors rounded-full w-[40px] h-[40px] hover:bg-white/30"
                                         aria-label="Submit email"
                                     >
-                                        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                       <div className='relative right-[-15px]'>
+                                         <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.80811 15.5L9.55811 7.75L1.80811 0L-0.000227694 1.80833L5.94144 7.75L-0.000227694 13.6917L1.80811 15.5Z" fill="black" />
                                         </svg>
+                                       </div>
                                     </button>
                                 </div>
                             </form>
                             <div className="mt-10 flex items-center gap-3">
-                                <a href="#" aria-label="Instagram" className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-md">
-                                    <img src="/images/Instagram_normal.png" alt="Instagram" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0" />
-                                    <img src="/images/Instagram_hover.png" alt="Instagram hover" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                                <a href="#" aria-label="Instagram" className="group inline-flex items-center justify-center">
+                                    <svg className="block group-hover:hidden" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.2718 0C11.3127 0 0 11.4148 0 25.4931C0 39.5783 11.3127 50.9931 25.2718 50.9931C39.2242 50.9931 50.5437 39.5783 50.5437 25.4931C50.5437 11.4148 39.2242 0 25.2718 0ZM36.5228 30.1005C36.5228 33.8294 33.5267 36.8525 29.8381 36.8525H20.7056C17.0102 36.8525 14.0209 33.8294 14.0209 30.1005V20.8926C14.0209 17.1637 17.0102 14.1405 20.7056 14.1405H29.8381C33.5267 14.1405 36.5228 17.1637 36.5228 20.8926V30.1005Z" fill="white"/>
+                                        <path d="M29.7347 16.3542H20.808C18.2712 16.3542 16.2144 18.4297 16.2144 20.9894V29.9967C16.2144 32.5564 18.2712 34.6318 20.808 34.6318H29.7347C32.2715 34.6318 34.3284 32.5564 34.3284 29.9967V20.9894C34.3284 18.4297 32.2715 16.3542 29.7347 16.3542ZM25.4222 30.8684C22.3986 30.8684 19.9373 28.3848 19.9373 25.3339C19.9373 22.283 22.3986 19.7994 25.4222 19.7994C28.4458 19.7994 30.9071 22.283 30.9071 25.3339C30.9071 28.3848 28.4458 30.8684 25.4222 30.8684ZM31.2294 20.7472C30.5095 20.7472 29.9198 20.1592 29.9198 19.4328C29.9198 18.7064 30.5095 18.1114 31.2294 18.1114C31.9493 18.1114 32.5321 18.7064 32.5321 19.4328C32.5321 20.1592 31.9493 20.7472 31.2294 20.7472Z" fill="white"/>
+                                        <path d="M28.9397 25.3338C28.9397 27.2916 27.3628 28.8828 25.4225 28.8828C23.489 28.8828 21.9121 27.2916 21.9121 25.3338C21.9121 23.3829 23.489 21.7917 25.4225 21.7917C27.3628 21.7917 28.9397 23.3829 28.9397 25.3338Z" fill="white"/>
+                                    </svg>
+                                    <svg className="hidden group-hover:block" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.5 0C11.4148 0 0 11.4148 0 25.4931C0 39.5783 11.4148 50.9931 25.5 50.9931C39.5783 50.9931 51 39.5783 51 25.4931C51 11.4148 39.5783 0 25.5 0ZM36.8525 30.1005C36.8525 33.8294 33.8293 36.8526 30.1074 36.8526H20.8926C17.1637 36.8526 14.1475 33.8294 14.1475 30.1005V20.8926C14.1475 17.1637 17.1637 14.1405 20.8926 14.1405H30.1074C33.8293 14.1405 36.8525 17.1637 36.8525 20.8926V30.1005Z" fill="#B9EB0C"/>
+                                        <path d="M30.0038 16.3542H20.9964C18.4368 16.3542 16.3613 18.4297 16.3613 20.9894V29.9967C16.3613 32.5564 18.4368 34.6318 20.9964 34.6318H30.0038C32.5634 34.6318 34.6389 32.5564 34.6389 29.9967V20.9894C34.6389 18.4297 32.5634 16.3542 30.0038 16.3542ZM25.6523 30.8684C22.6014 30.8684 20.1178 28.3848 20.1178 25.3339C20.1178 22.283 22.6014 19.7994 25.6523 19.7994C28.7032 19.7994 31.1867 22.283 31.1867 25.3339C31.1867 28.3848 28.7032 30.8684 25.6523 30.8684ZM31.5119 20.7472C30.7855 20.7472 30.1905 20.1592 30.1905 19.4328C30.1905 18.7064 30.7855 18.1114 31.5119 18.1114C32.2383 18.1114 32.8263 18.7064 32.8263 19.4328C32.8263 20.1592 32.2383 20.7472 31.5119 20.7472Z" fill="#B9EB0C"/>
+                                        <path d="M29.2014 25.3338C29.2014 27.2916 27.6102 28.8828 25.6524 28.8828C23.7015 28.8828 22.1104 27.2916 22.1104 25.3338C22.1104 23.3829 23.7015 21.7917 25.6524 21.7917C27.6102 21.7917 29.2014 23.3829 29.2014 25.3338Z" fill="#B9EB0C"/>
+                                    </svg>
                                 </a>
-                                <a href="#" aria-label="Telegram" className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-md">
-                                    <img src="/images/telegram_normal.png" alt="Telegram" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0" />
-                                    <img src="/images/telegram_hover.png" alt="Telegram hover" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                                <a href="#" aria-label="Telegram" className="group inline-flex items-center justify-center">
+                                    <svg className="block group-hover:hidden" width="52" height="51" viewBox="0 0 52 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M52 25.5C52 39.5831 40.3593 51 26 51C11.6406 51 0 39.5831 0 25.5C0 11.4167 11.6406 0 26 0C40.3593 0 52 11.4167 52 25.5ZM26.9316 18.8252C24.4028 19.8568 19.3486 21.992 11.7691 25.2307C10.5383 25.7109 9.89352 26.1806 9.83484 26.6396C9.73565 27.4158 10.7265 27.7213 12.0758 28.1375C12.2594 28.1941 12.4496 28.2527 12.6445 28.3147C13.972 28.738 15.7578 29.2332 16.6861 29.2528C17.5282 29.2707 18.4681 28.9303 19.5057 28.2313C26.5876 23.5429 30.2432 21.1732 30.4725 21.1219C30.6345 21.086 30.8589 21.0406 31.011 21.1732C31.1631 21.3058 31.148 21.5567 31.1319 21.624C31.0339 22.0345 27.1443 25.5811 25.1313 27.4163C24.504 27.9885 24.0588 28.3943 23.9678 28.4871C23.764 28.6946 23.5563 28.891 23.3566 29.0797C22.1234 30.2458 21.1983 31.1202 23.4078 32.5482C24.4696 33.2344 25.3191 33.8018 26.1667 34.3679C27.0923 34.9863 28.0155 35.6028 29.2102 36.3709C29.5144 36.5665 29.8051 36.7697 30.0882 36.9676C31.1654 37.7209 32.1331 38.3976 33.3289 38.2895C34.0236 38.227 34.7412 37.5862 35.1057 35.6753C35.9671 31.1592 37.6602 21.3741 38.0515 17.3421C38.0858 16.9888 38.0427 16.5367 38.0081 16.3382C37.9733 16.1398 37.901 15.857 37.6379 15.6476C37.3264 15.3997 36.8456 15.3475 36.6304 15.351C35.6525 15.3681 34.152 15.8797 26.9316 18.8252Z" fill="white"/>
+                                    </svg>
+                                    <svg className="hidden group-hover:block" width="52" height="51" viewBox="0 0 52 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M52 25.5C52 39.5831 40.3593 51 26 51C11.6406 51 0 39.5831 0 25.5C0 11.4167 11.6406 0 26 0C40.3593 0 52 11.4167 52 25.5ZM26.9316 18.8252C24.4028 19.8568 19.3486 21.992 11.7691 25.2307C10.5383 25.7109 9.89352 26.1806 9.83484 26.6396C9.73565 27.4158 10.7265 27.7213 12.0758 28.1375C12.2594 28.1941 12.4496 28.2527 12.6445 28.3147C13.972 28.738 15.7578 29.2332 16.6861 29.2528C17.5282 29.2707 18.4681 28.9303 19.5057 28.2313C26.5876 23.5429 30.2432 21.1732 30.4725 21.1219C30.6345 21.086 30.8589 21.0406 31.011 21.1732C31.1631 21.3058 31.148 21.5567 31.1319 21.624C31.0339 22.0345 27.1443 25.5811 25.1313 27.4163C24.504 27.9885 24.0588 28.3943 23.9678 28.4871C23.764 28.6946 23.5563 28.891 23.3566 29.0797C22.1234 30.2458 21.1983 31.1202 23.4078 32.5482C24.4696 33.2344 25.3191 33.8018 26.1667 34.3679C27.0923 34.9863 28.0155 35.6028 29.2102 36.3709C29.5144 36.5665 29.8051 36.7697 30.0882 36.9676C31.1654 37.7209 32.1331 38.3976 33.3289 38.2895C34.0236 38.227 34.7412 37.5862 35.1057 35.6753C35.9671 31.1592 37.6602 21.3741 38.0515 17.3421C38.0858 16.9888 38.0427 16.5367 38.0081 16.3382C37.9733 16.1398 37.901 15.857 37.6379 15.6476C37.3264 15.3997 36.8456 15.3475 36.6304 15.351C35.6525 15.3681 34.152 15.8797 26.9316 18.8252Z" fill="#B9EB0C"/>
+                                    </svg>
                                 </a>
-                                <a href="#" aria-label="TikTok" className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-md">
-                                    <img src="/images/tiktok_normal.png" alt="TikTok" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0" />
-                                    <img src="/images/tiktok_hover.png" alt="TikTok hover" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                                <a href="#" aria-label="TikTok" className="group inline-flex items-center justify-center">
+                                    <svg className="block group-hover:hidden" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.5 0C39.5833 0 51 11.4167 51 25.5C51 39.5833 39.5833 51 25.5 51C11.4167 51 0 39.5833 0 25.5C0 11.4167 11.4167 0 25.5 0ZM26.0869 13L26.0449 30.4531C26.0449 32.5944 23.9235 34.282 21.5215 34.2822C19.1196 34.2822 17.1719 32.5464 17.1719 30.4053C17.1719 28.2644 19.1197 26.5283 21.5215 26.5283C21.7011 26.5284 21.8731 26.5575 22.0479 26.5762V22.833C21.8731 22.8231 21.6991 22.8086 21.5215 22.8086C16.8154 22.8086 13.0002 26.2095 13 30.4043C13 34.5992 16.8153 38 21.5215 38C26.2272 37.9998 30.042 34.5991 30.042 30.4043V20.1279C31.4254 22.0113 33.7811 23.1459 36.3066 23.1455C36.4217 23.145 36.5366 23.1419 36.6514 23.1367L37 23.1143V18.9551C33.3873 18.7195 30.4822 16.2111 30.1035 13H26.0869Z" fill="white"/>
+                                    </svg>
+                                    <svg className="hidden group-hover:block" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.5 0C39.5833 0 51 11.4167 51 25.5C51 39.5833 39.5833 51 25.5 51C11.4167 51 0 39.5833 0 25.5C0 11.4167 11.4167 0 25.5 0ZM26.0869 13L26.0449 30.4531C26.0449 32.5944 23.9235 34.282 21.5215 34.2822C19.1196 34.2822 17.1719 32.5464 17.1719 30.4053C17.1719 28.2644 19.1197 26.5283 21.5215 26.5283C21.7011 26.5284 21.8731 26.5575 22.0479 26.5762V22.833C21.8731 22.8231 21.6991 22.8086 21.5215 22.8086C16.8154 22.8086 13.0002 26.2095 13 30.4043C13 34.5992 16.8153 38 21.5215 38C26.2272 37.9998 30.042 34.5991 30.042 30.4043V20.1279C31.4254 22.0113 33.7811 23.1459 36.3066 23.1455C36.4217 23.145 36.5366 23.1419 36.6514 23.1367L37 23.1143V18.9551C33.3873 18.7195 30.4822 16.2111 30.1035 13H26.0869Z" fill="#B9EB0C"/>
+                                    </svg>
                                 </a>
-                                <a href="#" aria-label="Facebook" className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-md">
-                                    <img src="/images/facebook_normal.png" alt="Facebook" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0" />
-                                    <img src="/images/facebook_hover.png" alt="Facebook hover" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                                <a href="#" aria-label="Facebook" className="group inline-flex items-center justify-center">
+                                    <svg className="block group-hover:hidden" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.5 0C11.4171 0 0 11.4164 0 25.5C0 39.5829 11.4164 51 25.5 51C39.5829 51 51 39.5836 51 25.5C50.9993 11.4171 39.5829 0 25.5 0ZM31.082 17.3443C31.082 17.5117 30.9464 17.6474 30.7796 17.6474H28.3692C27.7776 17.6474 27.2981 18.1268 27.2981 18.7184V21.2423H30.727C30.9041 21.2423 31.0432 21.3938 31.0287 21.5702L30.7277 25.1278C30.7146 25.2848 30.5831 25.4045 30.4261 25.4045H27.2981V37.2119C27.2981 37.3786 27.1625 37.5142 26.9958 37.5142H22.6814C22.5139 37.5142 22.379 37.3786 22.379 37.2119V25.5934V25.4038H20.2218C20.055 25.4038 19.9194 25.2682 19.9194 25.1008V21.5432C19.9194 21.3765 20.055 21.2409 20.2218 21.2409H22.379V17.8113C22.379 15.4209 24.3169 13.483 26.7066 13.483H30.7803C30.9477 13.483 31.0826 13.6186 31.0826 13.7861L31.082 17.3443Z" fill="white"/>
+                                    </svg>
+                                    <svg className="hidden group-hover:block" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.5 0C11.4171 0 0 11.4164 0 25.5C0 39.5829 11.4164 51 25.5 51C39.5829 51 51 39.5836 51 25.5C50.9993 11.4171 39.5829 0 25.5 0ZM31.082 17.3443C31.082 17.5117 30.9464 17.6474 30.7796 17.6474H28.3692C27.7776 17.6474 27.2981 18.1268 27.2981 18.7184V21.2423H30.727C30.9041 21.2423 31.0432 21.3938 31.0287 21.5702L30.7277 25.1278C30.7146 25.2848 30.5831 25.4045 30.4261 25.4045H27.2981V37.2119C27.2981 37.3786 27.1625 37.5142 26.9958 37.5142H22.6814C22.5139 37.5142 22.379 37.3786 22.379 37.2119V25.5934V25.4038H20.2218C20.055 25.4038 19.9194 25.2682 19.9194 25.1008V21.5432C19.9194 21.3765 20.055 21.2409 20.2218 21.2409H22.379V17.8113C22.379 15.4209 24.3169 13.483 26.7066 13.483H30.7803C30.9477 13.483 31.0826 13.6186 31.0826 13.7861L31.082 17.3443Z" fill="#B9EB0C"/>
+                                    </svg>
                                 </a>
-                                <a href="#" aria-label="YouTube" className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-md">
-                                    <img src="/images/youtube_normal.png" alt="YouTube" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0" />
-                                    <img src="/images/youtube_hover.png" alt="YouTube hover" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                                <a href="#" aria-label="YouTube" className="group inline-flex items-center justify-center">
+                                    <svg className="block group-hover:hidden" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M30.4801 25.5112L23.6831 28.8582C23.4219 29.0025 22.4941 28.8101 22.4941 28.5077V21.635C22.4941 21.3258 23.4288 21.1334 23.69 21.2846L30.1846 24.8102C30.4526 24.9683 30.755 25.36 30.4801 25.5112Z" fill="white"/>
+                                        <path d="M25.3325 0C11.3467 0 0 11.3467 0 25.3325C0 39.3252 11.3467 50.665 25.3325 50.665C39.3252 50.665 50.665 39.3252 50.665 25.3325C50.665 11.3467 39.3252 0 25.3325 0ZM38.8304 28.6657C38.8304 31.9234 36.1913 34.5693 32.9268 34.5693H17.7383C14.4806 34.5693 11.8347 31.9234 11.8347 28.6657V21.9993C11.8347 18.7417 14.4806 16.0957 17.7383 16.0957H32.9268C36.1913 16.0957 38.8304 18.7417 38.8304 21.9993V28.6657Z" fill="white"/>
+                                    </svg>
+                                    <svg className="hidden group-hover:block" width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M25.3325 0C11.3467 0 0 11.3467 0 25.3325C0 39.3252 11.3467 50.665 25.3325 50.665C39.3252 50.665 50.665 39.3252 50.665 25.3325C50.665 11.3467 39.3252 0 25.3325 0ZM38.8304 28.6657C38.8304 31.9234 36.1913 34.5693 32.9268 34.5693H17.7383C14.4806 34.5693 11.8347 31.9234 11.8347 28.6657V21.9993C11.8347 18.7417 14.4806 16.0957 17.7383 16.0957H32.9268C36.1913 16.0957 38.8304 18.7417 38.8304 21.9993V28.6657Z" fill="#B9EB0C"/>
+                                    </svg>
                                 </a>
                             </div>
                         </div>
@@ -110,7 +139,7 @@ export default function SiteFooter() {
                                     }}
                                 >
                                     <img
-                                        src="/tennis-balls.png"
+                                        src="/tenis-ball.svg"
                                         alt="Tennis ball"
                                         className="w-full h-full object-contain drop-shadow-2xl"
                                     />
@@ -119,7 +148,7 @@ export default function SiteFooter() {
                         </div>
                     </div>
                     <p className="text-sm opacity-90" style={{ marginTop: '0px' }}>
-                        Copyright © {new Date().getFullYear()}  © All Rights Reserved By Naré Arist
+                        Copyright © {new Date().getFullYear()}  © All Rights Reserved By Naré Arist 
                     </p>
                 </div>
             </div>

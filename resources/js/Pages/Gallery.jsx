@@ -2,9 +2,9 @@ import { Head } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SiteFooter from '../Components/SiteFooter';
-import MobileMenuOverlay from '../Components/MobileMenuOverlay';
+import SiteNav from '../Components/SiteNav';
 
-const galleryImages = [
+const fallbackGalleryImages = [
     {
         src: 'https://media.istockphoto.com/id/1510757303/ru/%D1%84%D0%BE%D1%82%D0%BE/%D1%82%D0%B5%D0%BD%D0%BD%D0%B8%D1%81%D0%B8%D1%81%D1%82-%D0%BF%D0%BE%D0%B4%D0%B0%D0%B5%D1%82-%D1%82%D0%B5%D0%BD%D0%BD%D0%B8%D1%81%D0%BD%D1%8B%D0%B9-%D0%BC%D1%8F%D1%87-%D0%B2%D0%BE-%D0%B2%D1%80%D0%B5%D0%BC%D1%8F-%D0%BC%D0%B0%D1%82%D1%87%D0%B0-%D0%BD%D0%B0-%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82%D0%BE%D0%BC-%D0%BA%D0%BE%D1%80%D1%82%D0%B5-%D0%BA%D0%BE%D0%BD%D1%86%D0%B5%D0%BF%D1%86%D0%B8%D1%8F-%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0-%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA-%D0%B8.jpg?s=612x612&w=0&k=20&c=bzPJIfeGGwVvL0zJIWemxm3LsyFOYfjaboMmuk6Es-8=',
         alt: 'Chapter 1 tennis image 1',
@@ -87,8 +87,7 @@ const galleryImages = [
     },
 ];
 
-export default function Gallery() {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default function Gallery({ galleryImagesFromDb = [] }) {
     const [selectedChapter, setSelectedChapter] = useState('all');
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -97,6 +96,7 @@ export default function Gallery() {
     const pinchStartZoomRef = useRef(1);
     const lastTapRef = useRef(0);
 
+    const galleryImages = galleryImagesFromDb.length > 0 ? galleryImagesFromDb : fallbackGalleryImages;
     const chapters = [...new Set(galleryImages.map((image) => image.chapter))];
     const filteredImages =
         selectedChapter === 'all'
@@ -184,62 +184,8 @@ export default function Gallery() {
         <>
             <Head title="պատկերասրահ" />
 
-            <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-sm border-b border-white/10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-                        <a
-                            href="/gallery"
-                            className="text-white text-sm md:text-base font-medium px-3 py-2 rounded-md bg-white/10"
-                        >
-                            պատկերասրահ
-                        </a>
-                        <a
-                            href="/#discussions"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            Քննարկումների սենյակ
-                        </a>
-                        <a
-                            href="/about-author"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            Հեղինակի մասին
-                        </a>
-                    </div>
+            <SiteNav activePage="gallery" mobileTitle="ՊԱՏԿԵՌԱՍՌԱՀ" />
 
-                    <div className="md:hidden flex items-center justify-between">
-                        <h1 className="text-white text-3xl font-semibold tracking-wide">
-                            ՊԱՏԿԵՐԱՍՐԱՀ
-                        </h1>
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md"
-                            aria-label="Toggle menu"
-                        >
-                            <svg width="40" height="40" viewBox="0 0 112 117" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g filter="url(#filter0_d_4074_686)">
-                                    <circle cx="56" cy="56" r="56" fill="#DB3106" />
-                                    <rect x="28" y="45" width="56.7871" height="8.34043" fill="white" />
-                                    <rect x="28" y="59" width="56.7871" height="8.34043" fill="white" />
-                                </g>
-                                <defs>
-                                    <filter id="filter0_d_4074_686" x="0" y="0" width="112" height="117" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                                        <feOffset dy="5" />
-                                        <feComposite in2="hardAlpha" operator="out" />
-                                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8 0" />
-                                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4074_686" />
-                                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4074_686" result="shape" />
-                                    </filter>
-                                </defs>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <MobileMenuOverlay isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             {/* Hero Section (same style as Home) */}
             <section className="relative top-[-80px] w-full overflow-hidden hidden md:block">
@@ -263,7 +209,7 @@ export default function Gallery() {
 
             <main className="bg-white min-h-screen  mt-0 md:-mt-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <section className="hidden md:flex flex-wrap items-center justify-center gap-3 mb-6">
+                    <section className="hidden md:flex flex-wrap items-center justify-center gap-3 mt-6 mb-6">
                         <button
                             type="button"
                             onClick={() => setSelectedChapter('all')}
@@ -315,17 +261,17 @@ export default function Gallery() {
                                     <p className="text-base text-black font-medium">
                                         Գլուխ {filteredImages[currentIndex].chapter}
                                     </p>
-                                    <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p>
+                                    {/* <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p> */}
                                 </div>
                             )}
                         </div>
 
-                        <div className="hidden md:block w-full">
+                        <div className="hidden md:block w-full max-w-[760px] mx-auto relative">
                             <button
                                 type="button"
                                 onClick={goToPreviousImage}
                                 aria-label="Previous image"
-                                className="absolute left-0 md:left-16 z-10 w-14 h-14 rounded-full bg-[#A7A7A7] text-white flex items-center justify-center hover:bg-[#8f8f8f] transition-colors"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full bg-[#A7A7A7] text-white flex items-center justify-center hover:bg-[#8f8f8f] transition-colors"
                             >
                                 <ChevronLeft className="w-7 h-7" />
                             </button>
@@ -342,7 +288,7 @@ export default function Gallery() {
                                     <p className="mt-3 text-base text-black font-medium">
                                         Գլուխ {filteredImages[currentIndex].chapter}
                                     </p>
-                                    <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p>
+                                    {/* <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p> */}
                                 </article>
                             )}
 
@@ -350,7 +296,7 @@ export default function Gallery() {
                                 type="button"
                                 onClick={goToNextImage}
                                 aria-label="Next image"
-                                className="absolute right-0 md:right-16 z-10 w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/85 transition-colors"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/85 transition-colors"
                             >
                                 <ChevronRight className="w-7 h-7" />
                             </button>

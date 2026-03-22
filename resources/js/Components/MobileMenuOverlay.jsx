@@ -51,6 +51,13 @@ export default function MobileMenuOverlay({ isOpen, onClose }) {
                 >
                     ԿԱՊ
                 </a>
+                <a
+                    href="https://ko-fi.com/tennisacademy"
+                    onClick={onClose}
+                    className="text-[#111111] text-[27px] font-semibold px-6 py-6 border-b border-black/60"
+                >
+                    ԱՋԱԿՑԵԼ ՆԱԽԱԳԾԻՆ
+                </a>
 
                 <div className="mt-auto px-6 py-10">
                     <div className="grid grid-cols-5 items-center gap-3 justify-items-center">

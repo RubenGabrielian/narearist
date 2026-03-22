@@ -16,12 +16,13 @@ import {
     Menu,
     ArrowRight,
 } from 'lucide-react';
-import MobileMenuOverlay from '../Components/MobileMenuOverlay';
+import SiteNav from '../Components/SiteNav';
 import SiteFooter from '../Components/SiteFooter';
 
 const CHAPTER_STORAGE_KEY = 'welcome-current-chapter';
+const CHAPTER_UNLOCK_KEY = 'chapter4-unlocked';
 
-export default function Welcome() {
+export default function Welcome({ chaptersFromDb = [] }) {
     const [currentChapter, setCurrentChapter] = useState(() => {
         if (typeof window === 'undefined') return 1;
         const saved = sessionStorage.getItem(CHAPTER_STORAGE_KEY);
@@ -30,7 +31,14 @@ export default function Welcome() {
     });
     const [showChapterList, setShowChapterList] = useState(false);
     const chapterListRef = useRef(null);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [readMoreEmail, setReadMoreEmail] = useState('');
+    const [chapter4Unlocked, setChapter4Unlocked] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return localStorage.getItem(CHAPTER_UNLOCK_KEY) === 'true';
+    });
+    const [showSubscribeForm, setShowSubscribeForm] = useState(false);
+    const [subscribeEmail, setSubscribeEmail] = useState('');
+    const [subscribeSubmitted, setSubscribeSubmitted] = useState(false);
     const [showTelegramIcon, setShowTelegramIcon] = useState(true);
     const [typingDots, setTypingDots] = useState('');
     const [showTelegramBlock, setShowTelegramBlock] = useState(true);
@@ -47,7 +55,7 @@ export default function Welcome() {
     // Playback speed options
     const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-    const chapters = {
+    const fallbackChapters = {
         1: {
             title: "ԳԼՈՒԽ 1",
             content: `«Զվարթնոցի փայլուն սալիկների վրա պտտվում են TUMI 19 Degree Worldwide Trip ճամպրուկի 🏷️$1,295 փոքրիկ սև ակերը։ Նրա հագուստը smart casual է, վերևից ներքև ամբողջությամբ սև գույնի. կիսաթև պոլո շապիկը՝ Loro Piana 🏷️$1,050, շալվարը՝ Isaia 🏷️$1,350, բոթասները՝ NikeCourt Air Zoom Vapor Pro 2 🏷️$79,99։ Թենիսի պայուսակը՝ HERMES Canvas Black Chevrons 🏷️$4,200, ժամացույցը՝ Vacheron Constantin Fiftysix day-date 🏷️$33,400։ Արևային ակնոցը՝ Persol PO0714 🏷️$440։ 
@@ -86,20 +94,48 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         },
     };
 
-    // Calculate total chapters dynamically from chapters object
-    const totalChapters = Object.keys(chapters).length;
+    const chapters = chaptersFromDb.reduce((accumulator, chapter) => {
+        accumulator[chapter.chapter_number] = {
+            title: chapter.title,
+            content: chapter.content,
+            image: chapter.image || "https://images.unsplash.com/photo-1622163642999-958ccb009458?w=800&h=600&fit=crop",
+        };
+        return accumulator;
+    }, {});
+
+    const chapterNumbers = Object.keys(chapters)
+        .map((chapterNumber) => Number(chapterNumber))
+        .sort((a, b) => a - b);
+    const hasChapters = chapterNumbers.length > 0;
+    const totalChapters = chapterNumbers.length;
+    const firstChapter = chapterNumbers[0] ?? 1;
+    const lastChapter = chapterNumbers[chapterNumbers.length - 1] ?? firstChapter;
 
     const goToPreviousChapter = () => {
-        setCurrentChapter((prev) => (prev > 1 ? prev - 1 : prev));
+        setCurrentChapter((prev) => {
+            const currentIndex = chapterNumbers.indexOf(prev);
+            if (currentIndex <= 0) return prev;
+            return chapterNumbers[currentIndex - 1];
+        });
     };
 
     const goToNextChapter = () => {
-        setCurrentChapter((prev) => (prev < totalChapters ? prev + 1 : prev));
+        setCurrentChapter((prev) => {
+            const currentIndex = chapterNumbers.indexOf(prev);
+            if (currentIndex === -1 || currentIndex >= chapterNumbers.length - 1) return prev;
+            const next = chapterNumbers[currentIndex + 1];
+            if (next >= 4 && !chapter4Unlocked) return prev;
+            return next;
+        });
     };
 
-    const currentChapterData = chapters[currentChapter];
-    const isFirstChapter = currentChapter === 1;
-    const isLastChapter = currentChapter === totalChapters;
+    const currentChapterData = hasChapters
+        ? (chapters[currentChapter] ?? chapters[firstChapter])
+        : { title: '', content: '', image: '' };
+    const isFirstChapter = !hasChapters || currentChapter === firstChapter;
+    const hasLockedChaptersAhead = !chapter4Unlocked && chapterNumbers.some(n => n >= 4);
+    const isLastChapter = !hasChapters || currentChapter === lastChapter || (currentChapter === 3 && hasLockedChaptersAhead);
+    const hasHtmlContent = /<[^>]+>/.test(currentChapterData?.content ?? '');
 
     // Persist chapter so it survives re-renders/remounts (e.g. when modal closes)
     useEffect(() => {
@@ -110,10 +146,11 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
     // Clamp persisted chapter to valid range on load
     useEffect(() => {
-        if (currentChapter < 1 || currentChapter > totalChapters) {
-            setCurrentChapter((prev) => Math.max(1, Math.min(prev, totalChapters)));
+        if (!hasChapters) return;
+        if (!chapterNumbers.includes(currentChapter)) {
+            setCurrentChapter(firstChapter);
         }
-    }, [totalChapters]);
+    }, [firstChapter, chapterNumbers, currentChapter, hasChapters]);
 
     // Audio player controls
     useEffect(() => {
@@ -223,6 +260,47 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         setPlaybackSpeed(speedOptions[nextIndex]);
     };
 
+    const handleSubscribeSubmit = async (event) => {
+        event.preventDefault();
+        if (!subscribeEmail.trim()) return;
+
+        try {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+            await fetch('/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: JSON.stringify({ email: subscribeEmail }),
+            });
+        } catch (_) {
+            // show success regardless
+        }
+
+        setSubscribeSubmitted(true);
+        setSubscribeEmail('');
+    };
+
+    const handleReadMoreSubmit = async (event) => {
+        event.preventDefault();
+        if (!readMoreEmail.trim()) return;
+
+        try {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+            await fetch('/chapter-unlock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: JSON.stringify({ email: readMoreEmail }),
+            });
+        } catch (_) {
+            // proceed with unlock even if request fails
+        }
+
+        localStorage.setItem(CHAPTER_UNLOCK_KEY, 'true');
+        setChapter4Unlocked(true);
+        setReadMoreEmail('');
+        const chapter4Num = chapterNumbers.find(n => n >= 4);
+        if (chapter4Num) setCurrentChapter(chapter4Num);
+    };
+
     // // Close chapter list when clicking outside
     // useEffect(() => {
     //     const handleClickOutside = (event) => {
@@ -239,25 +317,6 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
     //         document.removeEventListener('mousedown', handleClickOutside);
     //     };
     // }, [showChapterList]);
-
-    // Close mobile menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!isMobileMenuOpen) return;
-            const panel = document.querySelector('.mobile-menu-panel');
-            const toggle = document.querySelector('button[aria-label="Toggle menu"]');
-            if (panel?.contains(event.target) || toggle?.contains(event.target)) return;
-            setIsMobileMenuOpen(false);
-        };
-
-        if (isMobileMenuOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isMobileMenuOpen]);
 
 
     // Telegram floating block animation
@@ -291,80 +350,15 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             <Head title="ԹԵՆԻՍԻ ԱԿԱԴԵՄԻԱ - Welcome" />
 
 
-            {/* Navigation Menu - Sticky */}
-            <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-sm border-b border-white/10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-                        <a
-                            href="/gallery"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            պատկերասրահ
-                        </a>
-                        <a
-                            href="#"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            Քննարկումների սենյակ
-                        </a>
-                        <a
-                            href="/about-author"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            Հեղինակի մասին
-                        </a>
-                        <a
-                            href="#"
-                            className="text-white/90 text-sm md:text-base font-medium hover:text-white transition-colors duration-200 px-3 py-2 rounded-md hover:bg-white/10"
-                        >
-                            Կապ
-                        </a>
-                    </div>
+            <SiteNav />
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex justify-end">
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white/90 hover:text-white transition-colors p-2 rounded-md"
-                            aria-label="Toggle menu"
-                        >
-                            <svg width="40" height="40" viewBox="0 0 112 117" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g filter="url(#filter0_d_4074_686)">
-                                    <circle cx="56" cy="56" r="56" fill="#DB3106" />
-                                    <rect x="28" y="45" width="56.7871" height="8.34043" fill="white" />
-                                    <rect x="28" y="59" width="56.7871" height="8.34043" fill="white" />
-                                </g>
-                                <defs>
-                                    <filter id="filter0_d_4074_686" x="0" y="0" width="112" height="117" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                                        <feOffset dy="5" />
-                                        <feComposite in2="hardAlpha" operator="out" />
-                                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8 0" />
-                                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4074_686" />
-                                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4074_686" result="shape" />
-                                    </filter>
-                                </defs>
-                            </svg>
-                        </button>
-                    </div>
-
-                </div>
-            </nav>
-
-            <MobileMenuOverlay isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             {/* Elegant Hero Section */}
             <section className="relative top-[-80px] w-full  overflow-hidden">
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{
-                        backgroundImage: "url('/images/HERO_try_this.png')"
-                    }}
-                >
-                    <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
-                </div>
+                <div className="absolute inset-0 hidden lg:block bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/HERO_try_this.png')" }} />
+                <div className="absolute inset-0 hidden md:block lg:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-tablet.png')" }} />
+                <div className="absolute inset-0 block md:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-mobile.png')" }} />
+                <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
 
                 {/* Hero Content */}
                 <div className="relative h-[440px] px-4" />
@@ -383,7 +377,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 <button
                                     onClick={() => setShowChapterList(!showChapterList)}
                                     className="absolute  inline-flex items-center gap-2 px-4 py-2 bg-white  text-white rounded-full shadow-md transition-all text-sm font-medium w-[80px] h-[80px]"
-                                    style={{ boxShadow: '0px 5px 0px 0px #000000ba', bottom: '195px', left: '50%', transform: 'translateX(-50%)' }}
+                                    style={{ boxShadow: '0px 5px 0px 0px #000000ba', bottom: '175px', left: '50%', transform: 'translateX(-50%)' }}
                                     aria-label="Show chapter list"
                                 >
                                     <svg width="59" height="41" viewBox="0 0 59 41" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -407,7 +401,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                     <ChevronLeft className={`w-5 h-5 ${isFirstChapter ? 'text-slate-400' : 'text-slate-700'}`} />
                                 </button>
                                 <h2 className="text-2xl md:text-3xl font-serif font-semibold text-slate-900">
-                                    {currentChapterData.title}
+                                    {hasChapters ? currentChapterData.title : 'ԳԼՈՒԽՆԵՐ ՉԿԱՆ'}
                                 </h2>
                                 <button
                                     onClick={goToNextChapter}
@@ -467,48 +461,43 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
                         {/* Chapter List – table style */}
                         <div className="max-h-[60vh] overflow-y-auto">
-                            {Array.from({ length: totalChapters }, (_, i) => i + 1)
-                                .filter((chapterNum) => chapters[chapterNum])
-                                .map((chapterNum) => {
-                                    const isActive = chapterNum === currentChapter;
+                            {chapterNumbers.map((chapterNum) => {
+                                const isActive = chapterNum === currentChapter;
+                                const isLocked = chapterNum >= 4 && !chapter4Unlocked;
 
-                                    return (
-                                        <button
-                                            key={chapterNum}
-                                            type="button"
-                                            data-chapter={chapterNum}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                const num = Number(e.currentTarget.dataset.chapter);
-                                                if (Number.isNaN(num)) return;
-                                                setCurrentChapter(num);
-                                                // Defer closing so chapter state commits before modal unmount
-                                                requestAnimationFrame(() => {
-                                                    setShowChapterList(false);
-                                                });
-                                            }}
-                                            className="w-full border-b border-black/15 last:border-b-0 focus:outline-none cursor-pointer hover:opacity-90 transition-opacity text-left"
-                                        >
-                                            <div className="grid grid-cols-[120px_1fr]">
-                                                {/* Left cell – chapter number */}
-                                                <div
-                                                    className={`px-4 py-3.5 border-r border-black/15 text-sm md:text-base font-bokonique ${isActive
-                                                        ? 'bg-[#DB3106] text-white'
-                                                        : 'text-black'
-                                                        }`}
-                                                >
-                                                    Գլուխ {chapterNum}
-                                                </div>
-
-                                                {/* Right cell – chapter description (no active background) */}
-                                                <div className="px-4 py-3.5 text-sm md:text-base text-left text-black">
-                                                    Ճեղք Ակադեմիայում
-                                                </div>
+                                return (
+                                    <button
+                                        key={chapterNum}
+                                        type="button"
+                                        data-chapter={chapterNum}
+                                        disabled={isLocked}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (isLocked) return;
+                                            const num = Number(e.currentTarget.dataset.chapter);
+                                            if (Number.isNaN(num)) return;
+                                            setCurrentChapter(num);
+                                            requestAnimationFrame(() => {
+                                                setShowChapterList(false);
+                                            });
+                                        }}
+                                        className={`w-full border-b border-black/15 last:border-b-0 focus:outline-none text-left transition-opacity ${isLocked ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'}`}
+                                    >
+                                        <div className="grid grid-cols-[120px_1fr]">
+                                            <div
+                                                className={`px-4 py-3.5 border-r border-black/15 text-sm md:text-base font-bokonique ${isActive ? 'bg-[#DB3106] text-white' : 'text-black'}`}
+                                            >
+                                                Գλуխ {chapterNum}
                                             </div>
-                                        </button>
-                                    );
-                                })}
+                                            <div className="px-4 py-3.5 text-sm md:text-base text-left text-black flex items-center justify-between">
+                                                {chapters[chapterNum]?.title || `Գλуխ ${chapterNum}`}
+                                                {isLocked && <span className="ml-2">🔒</span>}
+                                            </div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -670,18 +659,77 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                         <div className="p-8 md:p-12 lg:p-3">
                             <div className="prose prose-lg prose-slate max-w-none">
                                 <div className="text-slate-800 leading-relaxed text-lg md:text-xl font-serif">
-                                    <h3>ԱՊՐԻԼ</h3>
-                                    {currentChapterData.content.split('\n\n').map((paragraph, index) => (
-                                        <p key={index} className="mb-6 last:mb-0 text-justify">
-                                            {paragraph}
+                                    {!hasChapters ? (
+                                        <p className="mb-6 text-justify text-slate-500">
+                                            Գլուխներ դեռ չկան։ Ավելացրեք գլուխներ admin panel-ից։
                                         </p>
-                                    ))}
+                                    ) : hasHtmlContent ? (
+                                        <div
+                                            className="prose prose-slate max-w-none chapter-content"
+                                            dangerouslySetInnerHTML={{ __html: currentChapterData.content }}
+                                        />
+                                    ) : (
+                                        currentChapterData.content.split('\n\n').map((paragraph, index) => (
+                                            <p key={index} className="mb-6 last:mb-0 text-justify">
+                                                {paragraph}
+                                            </p>
+                                        ))
+                                    )}
                                 </div>
-                                <img src="/images/tenis.png" alt="Tennis" className="w-full h-full object-cover" />
+                                {/* <img src="//images/tenis.png" alt="Tennis" className="w-full h-full object-cover" /> */}
+                                {hasChapters && currentChapter >= 4 && (
+                                    <div className="mt-5 rounded-2xl border border-black/10 bg-white p-4 md:p-6">
+                                        {subscribeSubmitted ? (
+                                            <p className="text-base md:text-lg text-black font-medium">
+                                                Ստուգի՛ր էլ. հասցեդ 📬
+                                            </p>
+                                        ) : (
+                                            <>
+                                                <p className="text-base md:text-lg text-black font-medium">
+                                                   Բաժանորդագրվի՛ր Թենիսի ակադեմիա մուտք ստանալու համար՝
+                                                </p>
+                                            <p className='mb-4'>1800 դրամ / ամիս</p>
+                                                 <p>📖 Նոր գլուխ ամեն շաբաթ</p>
+                                            <p>🎧 Աուդիոգիրք յուրաքանչյուր գլխի համար</p>
+                                            <p>🎨 Նկարազարդումներ յուրաքանչյուր գլխի համար</p>
+                                            <p className='mt-4 text-base md:text-lg text-black font-medium'>Դարձիր Թենիսի ակադեմիայի անդամ։</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setSubscribeSubmitted(true)}
+                                                    className="mt-3 inline-flex items-center justify-center rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-black/85 transition-colors"
+                                                >
+                                                    Բաժանորդագրվել / 1800 ֏
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                                {hasChapters && Number(currentChapter) === 3 && (
+                                    <div className="mt-5 rounded-2xl border border-black/10 bg-white p-4 md:p-6">
+                                        <p className="text-base md:text-lg text-black font-medium">
+                                            Մուտքագրի՛ր էլ․ հասցեդ, որ բացես 4րդ գլուխը
+                                        </p>
+                                        <form onSubmit={handleReadMoreSubmit} className="mt-3 flex flex-col sm:flex-row gap-3">
+                                            <input
+                                                type="email"
+                                                value={readMoreEmail}
+                                                onChange={(event) => setReadMoreEmail(event.target.value)}
+                                                placeholder="Your email"
+                                                className="w-full rounded-full border border-black/20 px-4 py-2.5 text-sm text-black placeholder-black/35 focus:outline-none focus:ring-2 focus:ring-black/30"
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="inline-flex items-center justify-center rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-black/85 transition-colors"
+                                            >
+                                                Շարունակել
+                                            </button>
+                                        </form>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </article>
-                    <p className='ml-3 py-4 text-[#5B5753]'>© Illustrations By Ani Melikyan</p>
+                    {/* <p className='ml-3 py-4 text-[#5B5753]'>© Illustrations By Ani Melikyan</p> */}
                 </div>
             </section>
 
@@ -691,7 +739,8 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {/* Floating Telegram Block */}
             {showTelegramBlock && (
                 <div className="fixed bottom-6 left-15 z-40">
-                    <div className="bg-black rounded-full w-30 h-30 shadow-lg flex items-center justify-center relative">
+              <a href="https://t.me/tennisacademynovel" target='_blank'>
+                      <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
                         {/* Close Button */}
                         <button
                             onClick={() => setShowTelegramBlock(false)}
@@ -701,7 +750,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             <X className="w-3 h-3 text-black" />
                         </button>
                         {showTelegramIcon ? (
-                            <svg width="70" height="70" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="w-10 h-10 md:w-[70px] md:h-[70px]" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M81.9945 0.58668C81.9945 0.58668 90.2865 -2.28985 89.5954 4.69602C89.3652 7.57259 87.2922 17.6404 85.6798 28.5302L80.1518 60.7886C80.1518 60.7886 79.6913 65.5143 75.5452 66.3362C71.399 67.158 65.1802 63.4597 64.0284 62.6377C63.107 62.0214 46.7535 52.7753 40.995 48.2551C39.3826 47.0223 37.5399 44.5566 41.2253 41.6801L65.4105 21.1335C68.1745 18.6678 70.9385 12.9148 59.4217 19.9007L27.175 39.4201C27.175 39.4201 23.4897 41.4746 16.5798 39.6255L1.60795 35.5161C1.60795 35.5161 -3.92008 32.4342 5.52363 29.352C28.5571 19.695 56.8882 9.83261 81.9945 0.58668Z" fill="white" />
                             </svg>
                         ) : (
@@ -710,6 +759,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             </span>
                         )}
                     </div>
+              </a>
                 </div>
             )}
         </>
