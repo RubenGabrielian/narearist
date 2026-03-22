@@ -355,8 +355,8 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
             {/* Elegant Hero Section */}
             <section className="relative top-[-80px] w-full  overflow-hidden">
-                <div className="absolute inset-0 hidden lg:block bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/HERO_try_this.png')" }} />
-                <div className="absolute inset-0 hidden md:block lg:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-tablet.png')" }} />
+                <div className="absolute inset-0 hidden lg:block bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-desktop.svg')" }} />
+                <div className="absolute inset-0 hidden md:block lg:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-tablet.svg')" }} />
                 <div className="absolute inset-0 block md:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-mobile.png')" }} />
                 <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
 
