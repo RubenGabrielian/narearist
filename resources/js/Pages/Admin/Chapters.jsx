@@ -32,15 +32,17 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
     const handleSubmitChapter = (event) => {
         event.preventDefault();
         if (editingChapterId) {
+            const shouldUseFormData = chapterForm.data.audio instanceof File;
             chapterForm.post(`/admin/chapters/${editingChapterId}/update`, {
-                forceFormData: true,
+                forceFormData: shouldUseFormData,
                 onSuccess: () => resetEditorAndForm(),
             });
             return;
         }
 
+        const shouldUseFormData = chapterForm.data.audio instanceof File;
         chapterForm.post('/admin/chapters', {
-            forceFormData: true,
+            forceFormData: shouldUseFormData,
             onSuccess: () => resetEditorAndForm(),
         });
     };
