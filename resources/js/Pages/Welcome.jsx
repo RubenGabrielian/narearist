@@ -144,7 +144,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         }
     }, [currentChapter]);
 
-    // Clamp persisted chapter to valid range on load
+
     useEffect(() => {
         if (!hasChapters) return;
         if (!chapterNumbers.includes(currentChapter)) {
@@ -401,7 +401,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                     <ChevronLeft className={`w-5 h-5 ${isFirstChapter ? 'text-slate-400' : 'text-slate-700'}`} />
                                 </button>
                                 <h2 className="text-2xl md:text-3xl font-serif font-semibold text-slate-900">
-                                    {hasChapters ? currentChapterData.title : 'ԳԼՈՒԽՆԵՐ ՉԿԱՆ'}
+                                    {hasChapters ? (chapterNumbers.includes(currentChapter) ? 'Գլուխ ' + currentChapter : 'Գլուխ ' + firstChapter) : 'ԳԼՈՒԽՆԵՐ ՉԿԱՆ'}
                                 </h2>
                                 <button
                                     onClick={goToNextChapter}
@@ -686,13 +686,13 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                         ) : (
                                             <>
                                                 <p className="text-base md:text-lg text-black font-medium">
-                                                   Բաժանորդագրվի՛ր Թենիսի ակադեմիա մուտք ստանալու համար՝
+                                                    Բաժանորդագրվի՛ր Թենիսի ակադեմիա մուտք ստանալու համար՝
                                                 </p>
-                                            <p className='mb-4'>1800 դրամ / ամիս</p>
-                                                 <p>📖 Նոր գլուխ ամեն շաբաթ</p>
-                                            <p>🎧 Աուդիոգիրք յուրաքանչյուր գլխի համար</p>
-                                            <p>🎨 Նկարազարդումներ յուրաքանչյուր գլխի համար</p>
-                                            <p className='mt-4 text-base md:text-lg text-black font-medium'>Դարձիր Թենիսի ակադեմիայի անդամ։</p>
+                                                <p className='mb-4'>1800 դրամ / ամիս</p>
+                                                <p>📖 Նոր գլուխ ամեն շաբաթ</p>
+                                                <p>🎧 Աուդիոգիրք յուրաքանչյուր գլխի համար</p>
+                                                <p>🎨 Նկարազարդումներ յուրաքանչյուր գլխի համար</p>
+                                                <p className='mt-4 text-base md:text-lg text-black font-medium'>Դարձիր Թենիսի ակադեմիայի անդամ։</p>
                                                 <button
                                                     type="button"
                                                     onClick={() => setSubscribeSubmitted(true)}
@@ -739,27 +739,27 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {/* Floating Telegram Block */}
             {showTelegramBlock && (
                 <div className="fixed bottom-6 left-15 z-40">
-              <a href="https://t.me/tennisacademynovel" target='_blank'>
-                      <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
-                        {/* Close Button */}
-                        <button
-                            onClick={() => setShowTelegramBlock(false)}
-                            className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-200 transition-colors"
-                            aria-label="Close"
-                        >
-                            <X className="w-3 h-3 text-black" />
-                        </button>
-                        {showTelegramIcon ? (
-                            <svg className="w-10 h-10 md:w-[70px] md:h-[70px]" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M81.9945 0.58668C81.9945 0.58668 90.2865 -2.28985 89.5954 4.69602C89.3652 7.57259 87.2922 17.6404 85.6798 28.5302L80.1518 60.7886C80.1518 60.7886 79.6913 65.5143 75.5452 66.3362C71.399 67.158 65.1802 63.4597 64.0284 62.6377C63.107 62.0214 46.7535 52.7753 40.995 48.2551C39.3826 47.0223 37.5399 44.5566 41.2253 41.6801L65.4105 21.1335C68.1745 18.6678 70.9385 12.9148 59.4217 19.9007L27.175 39.4201C27.175 39.4201 23.4897 41.4746 16.5798 39.6255L1.60795 35.5161C1.60795 35.5161 -3.92008 32.4342 5.52363 29.352C28.5571 19.695 56.8882 9.83261 81.9945 0.58668Z" fill="white" />
-                            </svg>
-                        ) : (
-                            <span className="text-white text-xs font-medium text-center px-2">
-                                Միանալ քննարկմանը
-                            </span>
-                        )}
-                    </div>
-              </a>
+                    <a href="https://t.me/tennisacademynovel" target='_blank'>
+                        <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setShowTelegramBlock(false)}
+                                className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-200 transition-colors"
+                                aria-label="Close"
+                            >
+                                <X className="w-3 h-3 text-black" />
+                            </button>
+                            {showTelegramIcon ? (
+                                <svg className="w-10 h-10 md:w-[70px] md:h-[70px]" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M81.9945 0.58668C81.9945 0.58668 90.2865 -2.28985 89.5954 4.69602C89.3652 7.57259 87.2922 17.6404 85.6798 28.5302L80.1518 60.7886C80.1518 60.7886 79.6913 65.5143 75.5452 66.3362C71.399 67.158 65.1802 63.4597 64.0284 62.6377C63.107 62.0214 46.7535 52.7753 40.995 48.2551C39.3826 47.0223 37.5399 44.5566 41.2253 41.6801L65.4105 21.1335C68.1745 18.6678 70.9385 12.9148 59.4217 19.9007L27.175 39.4201C27.175 39.4201 23.4897 41.4746 16.5798 39.6255L1.60795 35.5161C1.60795 35.5161 -3.92008 32.4342 5.52363 29.352C28.5571 19.695 56.8882 9.83261 81.9945 0.58668Z" fill="white" />
+                                </svg>
+                            ) : (
+                                <span className="text-white text-xs font-medium text-center px-2">
+                                    Միանալ քննարկմանը
+                                </span>
+                            )}
+                        </div>
+                    </a>
                 </div>
             )}
         </>
