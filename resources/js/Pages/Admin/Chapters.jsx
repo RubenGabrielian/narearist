@@ -67,6 +67,17 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
         deleteForm.delete(`/admin/chapters/${chapterId}`);
     };
 
+    const createUploadAdapter = (loader) => ({
+        upload: () =>
+            loader.file.then((file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({ default: reader.result });
+                reader.onerror = () => reject(new Error('Image upload failed.'));
+                reader.readAsDataURL(file);
+            })),
+        abort: () => { },
+    });
+
     useEffect(() => {
         let isMounted = true;
 
@@ -85,6 +96,8 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
                             'bulletedList',
                             'numberedList',
                             '|',
+                            'imageUpload',
+                            '|',
                             'outdent',
                             'indent',
                             '|',
@@ -102,6 +115,8 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
 
                     editorInstanceRef.current = editor;
                     setEditorReady(true);
+                    const fileRepository = editor.plugins.get('FileRepository');
+                    fileRepository.createUploadAdapter = (loader) => createUploadAdapter(loader);
                     editor.model.document.on('change:data', () => {
                         chapterForm.setData('content', editor.getData());
                     });
@@ -242,7 +257,7 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
                                 )}
                             </div>
                             <p className="mt-1 text-xs text-slate-500">
-                                Rich text editor with formatting tools.
+                                Rich text editor with formatting tools and image upload.
                             </p>
                             <textarea
                                 value={chapterForm.data.content}
@@ -282,7 +297,7 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
                     ) : (
                         <div className="mt-4 space-y-3">
                             {chapters.map((chapter) => (
-                                <article key={chapter.id} className="rounded-lg border border-slate-200 p-3">
+                                <article key={chapter.id} className="rounded-lg border border-slate-200 p-3" style={{ maxWidth: '60vw' }}>
                                     <p className="text-sm font-semibold text-slate-900">
                                         Chapter {chapter.chapter_number}: {chapter.title}
                                     </p>
