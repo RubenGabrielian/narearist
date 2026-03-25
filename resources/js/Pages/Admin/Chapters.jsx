@@ -31,20 +31,50 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
 
     const handleSubmitChapter = (event) => {
         event.preventDefault();
+        // Read the latest editor HTML at submit time to avoid stale content payloads.
+        const editorContent = editorInstanceRef.current
+            ? editorInstanceRef.current.getData()
+            : chapterForm.data.content;
+
+        // Keep form state synced for validation rendering and retries.
+        chapterForm.setData('content', editorContent);
+
+        const baseTransform = (data) => ({
+            ...data,
+            chapter_number: String(data.chapter_number ?? '').trim(),
+            title: String(data.title ?? '').trim(),
+            content: editorContent,
+            audio: data.audio instanceof File ? data.audio : null,
+        });
+
         if (editingChapterId) {
-            const shouldUseFormData = chapterForm.data.audio instanceof File;
-            chapterForm.post(`/admin/chapters/${editingChapterId}/update`, {
-                forceFormData: shouldUseFormData,
-                onSuccess: () => resetEditorAndForm(),
-            });
+            chapterForm
+                .transform((data) => ({
+                    ...baseTransform(data),
+                    // Method spoofing keeps Laravel REST semantics while sending multipart POST.
+                    _method: 'PUT',
+                }))
+                .post(`/admin/chapters/${editingChapterId}`, {
+                    // Always multipart for consistent shared-hosting parsing behavior.
+                    forceFormData: true,
+                    onSuccess: () => resetEditorAndForm(),
+                    onFinish: () => {
+                        // Prevent transform leakage into subsequent create requests.
+                        chapterForm.transform((data) => data);
+                    },
+                });
             return;
         }
 
-        const shouldUseFormData = chapterForm.data.audio instanceof File;
-        chapterForm.post('/admin/chapters', {
-            forceFormData: shouldUseFormData,
-            onSuccess: () => resetEditorAndForm(),
-        });
+        chapterForm
+            .transform((data) => baseTransform(data))
+            .post('/admin/chapters', {
+                forceFormData: true,
+                onSuccess: () => resetEditorAndForm(),
+                onFinish: () => {
+                    chapterForm.transform((data) => data);
+                },
+            });
     };
 
     const startEditingChapter = (chapter) => {
