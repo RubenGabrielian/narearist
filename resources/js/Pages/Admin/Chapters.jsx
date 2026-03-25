@@ -48,33 +48,31 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
         });
 
         if (editingChapterId) {
-            chapterForm
-                .transform((data) => ({
-                    ...baseTransform(data),
-                    // Method spoofing keeps Laravel REST semantics while sending multipart POST.
-                    _method: 'PUT',
-                }))
-                .post(`/admin/chapters/${editingChapterId}`, {
-                    // Always multipart for consistent shared-hosting parsing behavior.
-                    forceFormData: true,
-                    onSuccess: () => resetEditorAndForm(),
-                    onFinish: () => {
-                        // Prevent transform leakage into subsequent create requests.
-                        chapterForm.transform((data) => data);
-                    },
-                });
-            return;
-        }
-
-        chapterForm
-            .transform((data) => baseTransform(data))
-            .post('/admin/chapters', {
+            chapterForm.transform((data) => ({
+                ...baseTransform(data),
+                // Method spoofing keeps Laravel REST semantics while sending multipart POST.
+                _method: 'PUT',
+            }));
+            chapterForm.post(`/admin/chapters/${editingChapterId}`, {
+                // Always multipart for consistent shared-hosting parsing behavior.
                 forceFormData: true,
                 onSuccess: () => resetEditorAndForm(),
                 onFinish: () => {
+                    // Prevent transform leakage into subsequent create requests.
                     chapterForm.transform((data) => data);
                 },
             });
+            return;
+        }
+
+        chapterForm.transform((data) => baseTransform(data));
+        chapterForm.post('/admin/chapters', {
+            forceFormData: true,
+            onSuccess: () => resetEditorAndForm(),
+            onFinish: () => {
+                chapterForm.transform((data) => data);
+            },
+        });
     };
 
     const startEditingChapter = (chapter) => {
