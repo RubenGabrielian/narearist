@@ -60,10 +60,17 @@ class AdminAuthController extends Controller
     public function settings(Request $request): Response
     {
         $setting = AboutPageSetting::first();
+        $aboutImage = null;
+
+        if ($setting?->image_path) {
+            $aboutImage = str_starts_with($setting->image_path, 'uploads/')
+                ? asset($setting->image_path)
+                : asset('storage/' . $setting->image_path);
+        }
 
         return Inertia::render('Admin/Settings', [
             'adminLogin' => $request->session()->get('admin_login', 'admin'),
-            'aboutImage' => $setting?->image_path ? '/storage/' . $setting->image_path : null,
+            'aboutImage' => $aboutImage,
             'aboutContent' => $setting?->content ?? '',
         ]);
     }

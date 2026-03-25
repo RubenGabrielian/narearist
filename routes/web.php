@@ -22,8 +22,16 @@ Route::get('/', function () {
 
 Route::get('/about-author', function () {
     $setting = AboutPageSetting::first();
+    $aboutImage = null;
+
+    if ($setting?->image_path) {
+        $aboutImage = str_starts_with($setting->image_path, 'uploads/')
+            ? asset($setting->image_path)
+            : asset('storage/' . $setting->image_path);
+    }
+
     return Inertia::render('AboutAuthor', [
-        'aboutImage' => $setting?->image_path ? '/storage/' . $setting->image_path : null,
+        'aboutImage' => $aboutImage,
         'aboutContent' => $setting?->content,
     ]);
 })->name('about-author');
