@@ -56,6 +56,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/settings', [AdminSettingsController::class, 'update'])->name('admin.settings.update');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
         Route::post('/chapters', [AdminChapterController::class, 'store'])->name('admin.chapters.store');
+        Route::post('/chapters/{chapter}/update', [AdminChapterController::class, 'update'])->name('admin.chapters.update.post');
         Route::put('/chapters/{chapter}', [AdminChapterController::class, 'update'])->name('admin.chapters.update');
         Route::delete('/chapters/{chapter}', [AdminChapterController::class, 'destroy'])->name('admin.chapters.destroy');
         Route::post('/gallery', [AdminGalleryController::class, 'store'])->name('admin.gallery.store');

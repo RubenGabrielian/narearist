@@ -32,18 +32,10 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
     const handleSubmitChapter = (event) => {
         event.preventDefault();
         if (editingChapterId) {
-            chapterForm
-                .transform((data) => ({
-                    ...data,
-                    _method: 'PUT',
-                }))
-                .post(`/admin/chapters/${editingChapterId}`, {
-                    forceFormData: true,
-                    onSuccess: () => resetEditorAndForm(),
-                    onFinish: () => {
-                        chapterForm.transform((data) => data);
-                    },
-                });
+            chapterForm.post(`/admin/chapters/${editingChapterId}/update`, {
+                forceFormData: true,
+                onSuccess: () => resetEditorAndForm(),
+            });
             return;
         }
 
