@@ -119,7 +119,9 @@ export default function AdminGallery({ adminLogin, chapters = [], galleryImages 
                             {galleryImages.map((item) => (
                                 <article key={item.id} className="rounded-lg border border-slate-200 overflow-hidden">
                                     <img
-                                        src={`/storage/${item.image_path}`}
+                                        src={String(item.image_path ?? '').startsWith('uploads/')
+                                            ? `/${item.image_path}`
+                                            : `/storage/${item.image_path}`}
                                         alt={item.alt || `Chapter ${item.chapter_number} image`}
                                         className="w-full h-36 object-cover"
                                     />

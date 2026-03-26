@@ -42,7 +42,9 @@ Route::get('/gallery', function () {
             ->orderBy('id')
             ->get()
             ->map(fn (GalleryImage $image) => [
-                'src' => '/storage/' . $image->image_path,
+                'src' => str_starts_with($image->image_path, 'uploads/')
+                    ? asset($image->image_path)
+                    : asset('storage/' . $image->image_path),
                 'alt' => $image->alt ?: ('Chapter ' . $image->chapter_number . ' image'),
                 'chapter' => $image->chapter_number,
             ]),
