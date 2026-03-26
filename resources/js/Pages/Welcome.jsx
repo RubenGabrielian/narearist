@@ -95,11 +95,17 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
     };
 
     const chapters = chaptersFromDb.reduce((accumulator, chapter) => {
+        const audioUrl = chapter.audio_path
+            ? (String(chapter.audio_path).startsWith('uploads/')
+                ? `/${chapter.audio_path}`
+                : `/storage/${chapter.audio_path}`)
+            : null;
+
         accumulator[chapter.chapter_number] = {
             title: chapter.title,
             content: chapter.content,
             image: chapter.image || "https://images.unsplash.com/photo-1622163642999-958ccb009458?w=800&h=600&fit=crop",
-            audioUrl: chapter.audio_path ? `/storage/${chapter.audio_path}` : null,
+            audioUrl,
         };
         return accumulator;
     }, {});
