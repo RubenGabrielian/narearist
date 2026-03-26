@@ -205,6 +205,30 @@ export default function AdminChapters({ adminLogin, chapters = [] }) {
                 .chapter-editor .ck-editor__editable_inline {
                     min-height: 420px;
                 }
+
+                /* CKEditor heading styles can be overridden by global app CSS on some templates.
+                   Force reasonable typography inside the editor so H1/H2/etc are visually distinct. */
+                .chapter-editor .ck-content h1 {
+                    font-size: 2rem;
+                    line-height: 2.5rem;
+                    font-weight: 700;
+                    margin: 0.75rem 0 0.5rem;
+                }
+                .chapter-editor .ck-content h2 {
+                    font-size: 1.5rem;
+                    line-height: 2rem;
+                    font-weight: 700;
+                    margin: 0.75rem 0 0.5rem;
+                }
+                .chapter-editor .ck-content h3 {
+                    font-size: 1.25rem;
+                    line-height: 1.75rem;
+                    font-weight: 700;
+                    margin: 0.75rem 0 0.5rem;
+                }
+                .chapter-editor .ck-content p {
+                    margin: 0.5rem 0;
+                }
             `}</style>
 
             <AdminLayout activePage="chapters" adminLogin={adminLogin}>

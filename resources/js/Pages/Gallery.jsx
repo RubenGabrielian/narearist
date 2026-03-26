@@ -120,15 +120,15 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
     }, [isLightboxOpen]);
 
     const goToPreviousImage = () => {
-        if (filteredImages.length === 0) return;
+        if (filteredImages.length === 0 || currentIndex <= 0) return;
         setLightboxZoom(1);
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1));
+        setCurrentIndex((prevIndex) => prevIndex - 1);
     };
 
     const goToNextImage = () => {
-        if (filteredImages.length === 0) return;
+        if (filteredImages.length === 0 || currentIndex >= filteredImages.length - 1) return;
         setLightboxZoom(1);
-        setCurrentIndex((prevIndex) => (prevIndex === filteredImages.length - 1 ? 0 : prevIndex + 1));
+        setCurrentIndex((prevIndex) => prevIndex + 1);
     };
 
     const openLightbox = (index) => {
@@ -267,14 +267,24 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                         </div>
 
                         <div className="hidden md:block w-full max-w-[760px] mx-auto relative">
+                            {(() => {
+                                const isPrevDisabled = currentIndex <= 0;
+                                return (
                             <button
                                 type="button"
                                 onClick={goToPreviousImage}
+                                disabled={isPrevDisabled}
                                 aria-label="Previous image"
-                                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full bg-[#A7A7A7] text-white flex items-center justify-center hover:bg-[#8f8f8f] transition-colors"
+                                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
+                                    isPrevDisabled
+                                        ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
+                                        : 'bg-black text-white hover:bg-black/85'
+                                }`}
                             >
                                 <ChevronLeft className="w-7 h-7" />
                             </button>
+                                );
+                            })()}
 
                             {filteredImages[currentIndex] && (
                                 <article className="w-full max-w-[620px] mx-auto">
@@ -292,14 +302,24 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                                 </article>
                             )}
 
+                            {(() => {
+                                const isNextDisabled = currentIndex >= filteredImages.length - 1;
+                                return (
                             <button
                                 type="button"
                                 onClick={goToNextImage}
+                                disabled={isNextDisabled}
                                 aria-label="Next image"
-                                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/85 transition-colors"
+                                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
+                                    isNextDisabled
+                                        ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
+                                        : 'bg-black text-white hover:bg-black/85'
+                                }`}
                             >
                                 <ChevronRight className="w-7 h-7" />
                             </button>
+                                );
+                            })()}
                         </div>
                     </section>
                 </div>

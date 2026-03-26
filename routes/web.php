@@ -16,7 +16,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'chaptersFromDb' => Chapter::query()
             ->orderBy('chapter_number')
-            ->get(['chapter_number', 'title', 'content', 'image']),
+            ->get(['chapter_number', 'title', 'content', 'image', 'audio_path']),
     ]);
 })->name('home');
 

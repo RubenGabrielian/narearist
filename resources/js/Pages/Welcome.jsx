@@ -99,6 +99,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             title: chapter.title,
             content: chapter.content,
             image: chapter.image || "https://images.unsplash.com/photo-1622163642999-958ccb009458?w=800&h=600&fit=crop",
+            audioUrl: chapter.audio_path ? `/storage/${chapter.audio_path}` : null,
         };
         return accumulator;
     }, {});
@@ -131,7 +132,10 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
     const currentChapterData = hasChapters
         ? (chapters[currentChapter] ?? chapters[firstChapter])
-        : { title: '', content: '', image: '' };
+        : { title: '', content: '', image: '', audioUrl: null };
+    const displayedChapterNumber = hasChapters
+        ? (chapterNumbers.includes(currentChapter) ? currentChapter : firstChapter)
+        : currentChapter;
     const isFirstChapter = !hasChapters || currentChapter === firstChapter;
     const hasLockedChaptersAhead = !chapter4Unlocked && chapterNumbers.some(n => n >= 4);
     const isLastChapter = !hasChapters || currentChapter === lastChapter || (currentChapter === 3 && hasLockedChaptersAhead);
@@ -444,12 +448,19 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     >
                         {/* Top close button circle (half outside the modal) */}
                         <button
-                            style={{ boxShadow: "rgba(0, 0, 0, 0.73) 0px 5px 0px 0px" }}
+                            style={{
+                                boxShadow: "rgba(0, 0, 0, 0.73) 0px 5px 0px 0px", width: '80px',
+                                height: '80px',
+                                top: '-50px'
+                            }}
                             onClick={() => setShowChapterList(false)}
                             aria-label="Close chapter list"
                             className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-md"
                         >
-                            <span className="text-xl font-bold text-black leading-none">X</span>
+                            <span className="text-xl font-bold text-black leading-none"><svg width="37" height="46" viewBox="0 0 37 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28.8639 45.376L18.1759 28.8L7.87193 45.44L0.959934 42.048L13.5679 22.848L-6.63996e-05 5.43999L7.93593 0.255985L18.2399 16.256L28.1599 -1.52588e-05L34.8799 3.96799L23.1679 22.208L36.7359 40.384L28.8639 45.376Z" fill="black" />
+                            </svg>
+                            </span>
                         </button>
 
                         {/* Modal Header */}
@@ -484,15 +495,15 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                         }}
                                         className={`w-full border-b border-black/15 last:border-b-0 focus:outline-none text-left transition-opacity ${isLocked ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'}`}
                                     >
-                                        <div className="grid grid-cols-[120px_1fr]">
+                                        <div className="group grid grid-cols-[120px_1fr] hover:bg-[#DB3106]">
                                             <div
-                                                className={`px-4 py-3.5 border-r border-black/15 text-sm md:text-base font-bokonique ${isActive ? 'bg-[#DB3106] text-white' : 'text-black'}`}
+                                                className={`px-4 py-3.5 border-r border-black/15 text-sm md:text-base font-bokonique ${isActive ? 'bg-[#DB3106] text-white' : 'text-black group-hover:text-white'}`}
                                             >
-                                                Գλуխ {chapterNum}
+                                                Գլուխ {chapterNum}
                                             </div>
-                                            <div className="px-4 py-3.5 text-sm md:text-base text-left text-black flex items-center justify-between">
+                                            <div className="px-4 py-3.5 text-sm md:text-base text-left text-black group-hover:text-white flex items-center justify-between">
                                                 {chapters[chapterNum]?.title || `Գλуխ ${chapterNum}`}
-                                                {isLocked && <span className="ml-2">🔒</span>}
+                                                {isLocked && <span className="ml-2 group-hover:text-white">🔒</span>}
                                             </div>
                                         </div>
                                     </button>
@@ -510,7 +521,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     <div className="rounded-[27px] p-5 border border-slate-200/50" style={{ backgroundColor: '#E5F6E0' }}>
                         {/* Titles */}
                         <div className="mb-5">
-                            <h4 className="text-center text-sm md:text-base font-serif font-bold text-[#575757]">Գլ. {currentChapter}. </h4>
+                            <h4 className="text-center text-sm md:text-base font-serif font-bold text-[#575757]">Գլ. {displayedChapterNumber}. </h4>
                             <h2 className="text-2xl md:text-xl font-serif font-bold text-slate-900 text-center">
                                 Ճեղք Ակադեմիայում
                             </h2>
@@ -643,7 +654,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                     {/* Hidden Audio Element */}
                     <audio
                         ref={audioRef}
-                        src={`/audio/chapter-${currentChapter}.mp3`}
+                        src={currentChapterData?.audioUrl ?? `/audio/chapter-${displayedChapterNumber}.mp3`}
                         preload="metadata"
                         loop={isLooping}
                     />
@@ -739,29 +750,34 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {/* Floating Telegram Block */}
             {showTelegramBlock && (
                 <div className="fixed bottom-6 left-15 z-40">
-                    <a href="https://t.me/tennisacademynovel" target='_blank'>
-                        <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
-                            {/* Close Button */}
-                            <button
-                                onClick={() => setShowTelegramBlock(false)}
-                                className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-200 transition-colors"
-                                aria-label="Close"
-                            >
-                                <X className="w-3 h-3 text-black" />
-                            </button>
-                            {showTelegramIcon ? (
+
+                    <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setShowTelegramBlock(false)}
+                            className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-200 transition-colors"
+                            aria-label="Close"
+                        >
+                            <X className="w-3 h-3 text-black" />
+                        </button>
+                        {showTelegramIcon ? (
+                            <a href="https://t.me/tennisacademynovel" target='_blank'>
                                 <svg className="w-10 h-10 md:w-[70px] md:h-[70px]" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M81.9945 0.58668C81.9945 0.58668 90.2865 -2.28985 89.5954 4.69602C89.3652 7.57259 87.2922 17.6404 85.6798 28.5302L80.1518 60.7886C80.1518 60.7886 79.6913 65.5143 75.5452 66.3362C71.399 67.158 65.1802 63.4597 64.0284 62.6377C63.107 62.0214 46.7535 52.7753 40.995 48.2551C39.3826 47.0223 37.5399 44.5566 41.2253 41.6801L65.4105 21.1335C68.1745 18.6678 70.9385 12.9148 59.4217 19.9007L27.175 39.4201C27.175 39.4201 23.4897 41.4746 16.5798 39.6255L1.60795 35.5161C1.60795 35.5161 -3.92008 32.4342 5.52363 29.352C28.5571 19.695 56.8882 9.83261 81.9945 0.58668Z" fill="white" />
                                 </svg>
-                            ) : (
-                                <span className="text-white text-xs font-medium text-center px-2">
-                                    Միանալ քննարկմանը
-                                </span>
-                            )}
-                        </div>
-                    </a>
-                </div>
-            )}
+                            </a>
+                        ) : (
+
+                            <span className="text-white text-xs font-medium text-center px-2">
+                                <a href="https://t.me/tennisacademynovel" target='_blank'>Միանալ քննարկմանը  </a>
+                            </span>
+
+                        )}
+                    </div>
+
+                </div >
+            )
+            }
         </>
     );
 }

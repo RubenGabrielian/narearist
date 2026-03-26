@@ -3,7 +3,7 @@ import MobileMenuOverlay from './MobileMenuOverlay';
 
 const navLinks = [
     { href: '/gallery', label: 'Պատկերասրահ', key: 'gallery' },
-    { href: '/#discussions', label: 'Քննարկումների սենյակ', key: 'discussions' },
+    { href: 'https://t.me/tennisacademynovel', label: 'Քննարկումների սենյակ', key: 'discussions' },
     { href: '/about-author', label: 'Հեղինակի մասին', key: 'about' },
     { href: '/about-author#contact', label: 'Կապ', key: 'contact' },
     { href: 'https://ko-fi.com/tennisacademy', label: 'Աջակցել նախագծին', key: 'support' },
@@ -22,11 +22,10 @@ export default function SiteNav({ activePage, mobileTitle }) {
                             <a
                                 key={link.key}
                                 href={link.href}
-                                className={`text-sm md:text-base font-medium transition-colors duration-200 px-3 py-2 rounded-md ${
-                                    activePage === link.key
-                                        ? 'text-white bg-white/10'
-                                        : 'text-white/90 hover:text-white hover:bg-white/10'
-                                }`}
+                                className={`text-sm md:text-base font-medium transition-colors duration-200 px-3 py-2 rounded-md ${activePage === link.key
+                                    ? 'text-white bg-white/10'
+                                    : 'text-white/90 hover:text-white hover:bg-white/10'
+                                    }`}
                             >
                                 {link.label}
                             </a>
@@ -62,7 +61,7 @@ export default function SiteNav({ activePage, mobileTitle }) {
                                         <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4074_686" result="shape" />
                                     </filter>
                                 </defs>
-                            </svg>          
+                            </svg>
                         </button>
                     </div>
                 </div>
