@@ -168,7 +168,7 @@ export default function SiteFooter() {
                                 >
                                     <a href="https://ko-fi.com/tennisacademy" target='_blank'>
                                         <img
-                                            src="/tenis-ball-cropped.svg"
+                                            src="/MOBILEball.svg"
                                             alt="Tennis ball"
                                             className="w-full h-full object-contain drop-shadow-2xl"
                                         />

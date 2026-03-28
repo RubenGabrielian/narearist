@@ -19,7 +19,7 @@ export default function MobileMenuOverlay({ isOpen, onClose }) {
         `${isActive ? 'text-gray-400' : 'text-[#111111]'} text-[27px] font-semibold px-6 ${paddingClass} border-b border-black/60`;
 
     return (
-        <div className="mobile-menu-panel md:hidden fixed inset-x-3 top-8 z-[80] bg-white border-2 border-black rounded-xl">
+        <div className="mobile-menu-panel md:hidden fixed inset-x-3 top-10 z-[80] bg-white border-2 border-black rounded-xl">
             <button
                 type="button"
                 onClick={onClose}

@@ -482,11 +482,12 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                 </div>
             </section>
             {showChapterList && (
-                <div className="inset-0 z-50 flex items-center justify-center p-4">
+                <div className="inset-0 z-50 flex items-end md:items-center justify-center p-4">
                     {/* Backdrop – only clicking here closes the modal */}
                     {/* Modal Content – above backdrop so chapter clicks hit the list */}
                     <div
-                        className="absolute bottom-[160px] z-10 w-full max-w-md max-h-[80vh] rounded-[32px] shadow-2xl border-[2px] border-black bg-white pt-10 pb-4 overflow-visible"
+                        className="relative z-10 w-full max-w-md max-h-[80vh] rounded-[32px] shadow-2xl border-[2px] border-black bg-white pt-10 pb-4 overflow-visible"
+                        style={{ top: '-315px' }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Top close button circle (half outside the modal) */}

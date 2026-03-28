@@ -28,7 +28,7 @@
                             </p>
 
                             <p style="margin:0 0 20px; font-size:16px; line-height:1.7;">
-                                Մինչ այդ, ահա փոքրիկ հատված հինգերորդ գլխից, որ հետ չմնաք Ապրիլի մոտ կատարվողից 😊🎾
+                                Մինչ այդ, ահա փոքրիկ հատված հինգերորդ գլխից, որ հետ չմնաք Ապրիլի կյանքում կատարվող իրադարձություններից 😊🎾
                             </p>
 
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#fff8f5; border-left:4px solid #DB3106; border-radius:10px;">

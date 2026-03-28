@@ -355,20 +355,7 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                             onTouchEnd={handleLightboxTouchEnd}
                         >
                             <div className="min-h-full min-w-full flex items-center justify-center px-2">
-                                <div className="relative w-full flex items-center justify-center">
-                                    <button
-                                        type="button"
-                                        onClick={goToPreviousImage}
-                                        disabled={currentIndex <= 0}
-                                        className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex <= 0
-                                            ? 'bg-white/50 text-black/40 cursor-not-allowed'
-                                            : 'bg-white/90 text-black'
-                                            }`}
-                                        aria-label="Previous image"
-                                    >
-                                        <ChevronLeft className="w-5 h-5" />
-                                    </button>
-
+                                <div className="w-full flex items-center justify-center">
                                     <img
                                         src={filteredImages[currentIndex].src}
                                         alt={filteredImages[currentIndex].alt}
@@ -381,28 +368,49 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                                             transition: 'transform 120ms ease-out',
                                         }}
                                     />
-
-                                    <button
-                                        type="button"
-                                        onClick={goToNextImage}
-                                        disabled={currentIndex >= filteredImages.length - 1}
-                                        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex >= filteredImages.length - 1
-                                            ? 'bg-white/50 text-black/40 cursor-not-allowed'
-                                            : 'bg-white/90 text-black'
-                                            }`}
-                                        aria-label="Next image"
-                                    >
-                                        <ChevronRight className="w-5 h-5" />
-                                    </button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 px-2 pointer-events-none">
+                            <div className="flex items-center justify-between">
+                                <button
+                                    type="button"
+                                    onClick={goToPreviousImage}
+                                    disabled={currentIndex <= 0}
+                                    className={`pointer-events-auto h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex <= 0
+                                        ? 'bg-white/50 text-black/40 cursor-not-allowed'
+                                        : 'bg-white/90 text-black'
+                                        }`}
+                                    aria-label="Previous image"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={goToNextImage}
+                                    disabled={currentIndex >= filteredImages.length - 1}
+                                    className={`pointer-events-auto h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex >= filteredImages.length - 1
+                                        ? 'bg-white/50 text-black/40 cursor-not-allowed'
+                                        : 'bg-white/90 text-black'
+                                        }`}
+                                    aria-label="Next image"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
                             </div>
                         </div>
 
                         <div className="absolute bottom-0 left-0 right-0 z-20 ">
                             <div className="px-3 pt-2 pb-3">
                                 {filteredImages[currentIndex].authorName && (
-                                    <p className="mb-2 text-center text-xs text-white/90">
-                                        © {filteredImages[currentIndex].authorName}
+                                    <p className="mb-2 text-center text-xs text-white/90" style={{
+                                        background: '#000000a3',
+                                        width: 'fit-content',
+                                        margin: '0 auto 10px auto'
+                                    }}>
+                                        {filteredImages[currentIndex].authorName}
                                     </p>
                                 )}
                                 <div className="overflow-x-auto">
