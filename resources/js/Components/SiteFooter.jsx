@@ -166,9 +166,9 @@ export default function SiteFooter() {
                                         transform: `translate(${ballPosition.x}px, ${ballPosition.y}px) rotate(${ballPosition.rotation}deg)`,
                                     }}
                                 >
-                                    <a href="https://ko-fi.com/tennisacademy" target='_blank'>
+                                    <a href="https://ko-fi.com/tennisacademy" className='decoration-none' style={{ textDecoration: 'none', outline: 'none' }} target='_blank'>
                                         <img
-                                            src="/MOBILEball.svg"
+                                            src="/tenis-ball-cropped.svg"
                                             alt="Tennis ball"
                                             className="w-full h-full object-contain drop-shadow-2xl"
                                         />
