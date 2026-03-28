@@ -3,6 +3,7 @@ import { Link, useForm } from '@inertiajs/react';
 const navItems = [
     { key: 'chapters', label: 'Chapters', href: '/admin/chapters' },
     { key: 'gallery', label: 'Gallery', href: '/admin/gallery' },
+    { key: 'contacts', label: 'Contacts', href: '/admin/contacts' },
     { key: 'settings', label: 'Settings', href: '/admin/settings' },
 ];
 

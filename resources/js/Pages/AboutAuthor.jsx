@@ -7,7 +7,7 @@ export default function AboutAuthor({ aboutImage, aboutContent }) {
         <>
             <Head title="Հևի坯ակի մասի坯" />
 
-            <SiteNav activePage="about" mobileTitle="ՀԵՂԼԻՆԱԿԻ ՄԱՍԽ" />
+            <SiteNav activePage="about" mobileTitle="ՀԵՂԻՆԱԻ ՄԱՍԻՆ" />
 
             {/* Main Content - About Author layout */}
             <main className="bg-white py-16 md:py-20">
@@ -51,18 +51,19 @@ export default function AboutAuthor({ aboutImage, aboutContent }) {
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
                             <input
-                                type="text"
-                                placeholder="Քեզ հոգնող կարծիքը"
+                                type="email"
+                                placeholder="Էլ․ հասցե"
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
                             <input
-                                type="email"
-                                placeholder="@էլ ․ հասցե"
+                                type="text"
+                                placeholder="Թեմա"
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
+
                             <textarea
                                 rows={5}
-                                placeholder="Նամակ գրի այստեղ..."
+                                placeholder="Նամակդ գրի այստեղ..."
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30 resize-none"
                             />
 
@@ -72,7 +73,7 @@ export default function AboutAuthor({ aboutImage, aboutContent }) {
                                     className="inline-flex items-center justify-center px-15 py-3 rounded-full bg-white text-black font-bokonique text-sm md:text-base tracking-wide hover:bg-[#FEEFE9] transition-colors"
                                     style={{ boxShadow: '-3px 4px 0 2px rgba(0, 0, 0, 0.85)' }}
                                 >
-                                    ՈւՂԱՐԿԵԼ
+                                    ՈԻՂԱՐԿԵԼ
                                 </button>
                             </div>
                         </form>

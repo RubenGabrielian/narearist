@@ -6,6 +6,7 @@ export default function AdminGallery({ adminLogin, chapters = [], galleryImages 
     const uploadForm = useForm({
         chapter_number: '',
         alt: '',
+        author_name: '',
         image: null,
     });
     const deleteForm = useForm({});
@@ -33,7 +34,7 @@ export default function AdminGallery({ adminLogin, chapters = [], galleryImages 
                 <section className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-slate-900">Upload Gallery Image</h2>
                     <p className="mt-1 text-sm text-slate-500">
-                        Select chapter, write alt text, upload image, then click Save Image.
+                        Select chapter, optional alt and image author name, upload image, then click Save Image.
                     </p>
 
                     {props.flash?.success && (
@@ -72,6 +73,20 @@ export default function AdminGallery({ adminLogin, chapters = [], galleryImages 
                             />
                             {uploadForm.errors.alt && (
                                 <p className="mt-1 text-sm text-red-600">{uploadForm.errors.alt}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Image author name (optional)</label>
+                            <input
+                                type="text"
+                                value={uploadForm.data.author_name}
+                                onChange={(event) => uploadForm.setData('author_name', event.target.value)}
+                                placeholder="e.g. Ani Melikyan"
+                                className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                            />
+                            {uploadForm.errors.author_name && (
+                                <p className="mt-1 text-sm text-red-600">{uploadForm.errors.author_name}</p>
                             )}
                         </div>
 
@@ -129,6 +144,9 @@ export default function AdminGallery({ adminLogin, chapters = [], galleryImages 
                                         <p className="text-xs font-medium text-slate-700">
                                             Chapter {item.chapter_number}
                                         </p>
+                                        {item.author_name && (
+                                            <p className="text-xs text-slate-500 mt-1">© {item.author_name}</p>
+                                        )}
                                         <button
                                             type="button"
                                             onClick={() => handleDelete(item.id)}

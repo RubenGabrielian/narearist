@@ -10,5 +10,6 @@ class GalleryImage extends Model
         'chapter_number',
         'image_path',
         'alt',
+        'author_name',
     ];
 }

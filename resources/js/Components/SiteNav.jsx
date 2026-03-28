@@ -2,6 +2,7 @@ import { useState } from 'react';
 import MobileMenuOverlay from './MobileMenuOverlay';
 
 const navLinks = [
+    { href: '/', label: 'ԹԱ', key: 'gallery' },
     { href: '/gallery', label: 'Պատկերասրահ', key: 'gallery' },
     { href: 'https://t.me/tennisacademynovel', label: 'Քննարկումների սենյակ', key: 'discussions' },
     { href: '/about-author', label: 'Հեղինակի մասին', key: 'about' },
@@ -17,6 +18,9 @@ export default function SiteNav({ activePage, mobileTitle }) {
             <nav className="sticky top-0 z-50 bg-black/70 backdrop-blur-sm border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     {/* Desktop Menu */}
+                    {/* <li>
+                        <a href="">ԹԱ</a>
+                    </li> */}
                     <div className="hidden md:flex items-center justify-center gap-8 md:gap-12">
                         {navLinks.map((link) => (
                             <a

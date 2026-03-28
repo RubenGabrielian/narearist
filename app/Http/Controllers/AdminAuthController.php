@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AboutPageSetting;
 use App\Models\Chapter;
+use App\Models\Email;
 use App\Models\GalleryImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -84,7 +85,17 @@ class AdminAuthController extends Controller
                 ->get(['id', 'chapter_number', 'title']),
             'galleryImages' => GalleryImage::query()
                 ->orderByDesc('id')
-                ->get(['id', 'chapter_number', 'image_path', 'alt']),
+                ->get(['id', 'chapter_number', 'image_path', 'alt', 'author_name']),
+        ]);
+    }
+
+    public function contacts(Request $request): Response
+    {
+        return Inertia::render('Admin/Contacts', [
+            'adminLogin' => $request->session()->get('admin_login', 'admin'),
+            'emails' => Email::query()
+                ->orderByDesc('id')
+                ->get(['id', 'email', 'created_at']),
         ]);
     }
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminChapterController;
 use App\Http\Controllers\AdminGalleryController;
 use App\Http\Controllers\AdminSettingsController;
 use App\Http\Controllers\ChapterUnlockController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\SubscriptionController;
 use App\Models\AboutPageSetting;
 use App\Models\Chapter;
@@ -47,12 +48,14 @@ Route::get('/gallery', function () {
                     : asset('storage/' . $image->image_path),
                 'alt' => $image->alt ?: ('Chapter ' . $image->chapter_number . ' image'),
                 'chapter' => $image->chapter_number,
+                'authorName' => $image->author_name,
             ]),
     ]);
 })->name('gallery');
 
 Route::post('/chapter-unlock', [ChapterUnlockController::class, 'store'])->name('chapter.unlock');
 Route::post('/subscribe', [SubscriptionController::class, 'store'])->name('subscribe');
+Route::post('/emails', [EmailController::class, 'store'])->name('emails.store');
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
@@ -62,6 +65,7 @@ Route::prefix('admin')->group(function () {
         Route::redirect('/', '/admin/chapters')->name('admin.dashboard');
         Route::get('/chapters', [AdminAuthController::class, 'chapters'])->name('admin.chapters');
         Route::get('/gallery', [AdminAuthController::class, 'gallery'])->name('admin.gallery');
+        Route::get('/contacts', [AdminAuthController::class, 'contacts'])->name('admin.contacts');
         Route::get('/settings', [AdminAuthController::class, 'settings'])->name('admin.settings');
         Route::post('/settings', [AdminSettingsController::class, 'update'])->name('admin.settings.update');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

@@ -39,9 +39,14 @@ export default function Welcome({ chaptersFromDb = [] }) {
     const [showSubscribeForm, setShowSubscribeForm] = useState(false);
     const [subscribeEmail, setSubscribeEmail] = useState('');
     const [subscribeSubmitted, setSubscribeSubmitted] = useState(false);
+    const [subscribeProcessing, setSubscribeProcessing] = useState(false);
+    const [subscribeError, setSubscribeError] = useState('');
+    const [unlockedEmail, setUnlockedEmail] = useState('');
     const [showTelegramIcon, setShowTelegramIcon] = useState(true);
     const [typingDots, setTypingDots] = useState('');
     const [showTelegramBlock, setShowTelegramBlock] = useState(true);
+    const readingContentRef = useRef(null);
+    const shouldScrollAfterUnlockRef = useRef(false);
 
     // Audio player state
     const [isPlaying, setIsPlaying] = useState(false);
@@ -270,35 +275,45 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
         setPlaybackSpeed(speedOptions[nextIndex]);
     };
 
-    const handleSubscribeSubmit = async (event) => {
-        event.preventDefault();
-        if (!subscribeEmail.trim()) return;
-
-        try {
-            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-            await fetch('/subscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
-                body: JSON.stringify({ email: subscribeEmail }),
-            });
-        } catch (_) {
-            // show success regardless
+    const handleSubscribeSubmit = async () => {
+        const targetEmail = subscribeEmail.trim();
+        if (!targetEmail) {
+            setSubscribeError('Խնդրում ենք մուտքագրել էլ. հասցեն։');
+            return;
         }
 
-        setSubscribeSubmitted(true);
-        setSubscribeEmail('');
+        setSubscribeProcessing(true);
+        setSubscribeError('');
+        try {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+            const response = await fetch('/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: JSON.stringify({ email: targetEmail }),
+            });
+            if (!response.ok) {
+                throw new Error('Subscription request failed');
+            }
+            setSubscribeSubmitted(true);
+            setSubscribeEmail('');
+        } catch (_) {
+            setSubscribeError('Նամակը չուղարկվեց։ Խնդրում ենք փորձել կրկին։');
+        } finally {
+            setSubscribeProcessing(false);
+        }
     };
 
     const handleReadMoreSubmit = async (event) => {
         event.preventDefault();
-        if (!readMoreEmail.trim()) return;
+        const emailValue = readMoreEmail.trim();
+        if (!emailValue) return;
 
         try {
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
             await fetch('/chapter-unlock', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
-                body: JSON.stringify({ email: readMoreEmail }),
+                body: JSON.stringify({ email: emailValue }),
             });
         } catch (_) {
             // proceed with unlock even if request fails
@@ -306,10 +321,32 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
 
         localStorage.setItem(CHAPTER_UNLOCK_KEY, 'true');
         setChapter4Unlocked(true);
+        setUnlockedEmail(emailValue);
+        setSubscribeEmail(emailValue);
         setReadMoreEmail('');
+        shouldScrollAfterUnlockRef.current = true;
         const chapter4Num = chapterNumbers.find(n => n >= 4);
         if (chapter4Num) setCurrentChapter(chapter4Num);
     };
+
+    useEffect(() => {
+        if (!shouldScrollAfterUnlockRef.current) return;
+        const readingElement = readingContentRef.current;
+        if (!readingElement) return;
+
+        shouldScrollAfterUnlockRef.current = false;
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // Force the content container to start from its top.
+                readingElement.scrollTop = 0;
+                if (typeof readingElement.scrollTo === 'function') {
+                    readingElement.scrollTo({ top: 0, behavior: 'auto' });
+                }
+                readingElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    }, [currentChapter]);
 
     // // Close chapter list when clicking outside
     // useEffect(() => {
@@ -367,7 +404,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             <section className="relative top-[-80px] w-full  overflow-hidden">
                 <div className="absolute inset-0 hidden lg:block bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-desktop.svg')" }} />
                 <div className="absolute inset-0 hidden md:block lg:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-tablet.svg')" }} />
-                <div className="absolute inset-0 block md:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/nare-arist-tennis-academy-armenian-novel-hero-mobile.png')" }} />
+                <div className="absolute inset-0 block md:hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/PHONEHERO.svg')" }} />
                 <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
 
                 {/* Hero Content */}
@@ -386,7 +423,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             <div className="mb-3">
                                 <button
                                     onClick={() => setShowChapterList(!showChapterList)}
-                                    className="absolute  inline-flex items-center gap-2 px-4 py-2 bg-white  text-white rounded-full shadow-md transition-all text-sm font-medium w-[80px] h-[80px]"
+                                    className="absolute  inline-flex items-center gap-2 px-4 py-2 bg-white  text-white rounded-full shadow-md transition-all text-sm font-medium w-[80px] h-[80px] cursor-pointer hover:bg-slate-00"
                                     style={{ boxShadow: '0px 5px 0px 0px #000000ba', bottom: '175px', left: '50%', transform: 'translateX(-50%)' }}
                                     aria-label="Show chapter list"
                                 >
@@ -423,7 +460,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                 </button>
                             </div>
 
-                            <h3 className='text-2xl md:text-4xl font-serif font-semibold  mt-5 text-slate-900 mb-3 mt-10' style={{ fontFamily: 'Bokonique' }}>Ճեղք Ակադեմիայում</h3>
+                            <h3 className='text-2xl md:text-4xl font-serif font-semibold  mt-5 text-slate-900 mb-3 mt-10' style={{ fontFamily: 'Bokonique' }}>{chapters[currentChapter]?.title}</h3>
                             {/* <div className="flex items-center justify-center gap-2">
                                 {Array.from({ length: totalChapters }, (_, i) => i + 1)
                                     .filter(chapterNum => chapters[chapterNum])
@@ -457,7 +494,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                             style={{
                                 boxShadow: "rgba(0, 0, 0, 0.73) 0px 5px 0px 0px", width: '80px',
                                 height: '80px',
-                                top: '-50px'
+                                top: '-38px'
                             }}
                             onClick={() => setShowChapterList(false)}
                             aria-label="Close chapter list"
@@ -524,12 +561,12 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {/* Professional Audio Player */}
             <section className="bg-white">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-                    <div className="rounded-[27px] p-5 border border-slate-200/50" style={{ backgroundColor: '#E5F6E0' }}>
+                    <div className="relative rounded-[27px] p-5 border border-slate-200/50" style={{ backgroundColor: '#E5F6E0' }}>
                         {/* Titles */}
                         <div className="mb-5">
-                            <h4 className="text-center text-sm md:text-base font-serif font-bold text-[#575757]">Գլ. {displayedChapterNumber}. </h4>
+                            <h4 className="text-center text-sm md:text-base font-serif font-bold text-[#575757]">Գլ. {displayedChapterNumber} </h4>
                             <h2 className="text-2xl md:text-xl font-serif font-bold text-slate-900 text-center">
-                                Ճեղք Ակադեմիայում
+                                {chapters[currentChapter]?.title}
                             </h2>
                         </div>
 
@@ -561,7 +598,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                         {/* Playback Speed Control */}
                         <button
                             onClick={changePlaybackSpeed}
-                            className="absolute left-[70px] bottom-[-40px] p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 relative min-w-[50px]"
+                            className="absolute left-4 md:left-[90px] bottom-[20px] p-2 rounded-full hover:bg-white text-slate-700 hover:bg-slate-50 transition-colors hover:shadow-sm flex items-center justify-center w-10 h-10 min-w-[50px]"
                             aria-label={`Playback speed: ${playbackSpeed}x`}
                         >
                             {playbackSpeed}x
@@ -670,7 +707,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {/* Reading Content - Book-like Layout */}
             <section className="py-12 md:py-0 bg-gradient-to-b from-white to-slate-50/30">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <article className="bg-white rounded-2xl overflow-scroll max-h-[800px]">
+                    <article ref={readingContentRef} className="bg-white rounded-2xl overflow-scroll max-h-[800px]">
 
                         {/* Chapter Content - Optimized for Reading */}
                         <div className="p-8 md:p-12 lg:p-3">
@@ -710,13 +747,24 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                                                 <p>🎧 Աուդիոգիրք յուրաքանչյուր գլխի համար</p>
                                                 <p>🎨 Նկարազարդումներ յուրաքանչյուր գլխի համար</p>
                                                 <p className='mt-4 text-base md:text-lg text-black font-medium'>Դարձիր Թենիսի ակադեմիայի անդամ։</p>
+                                                <input
+                                                    type="email"
+                                                    value={subscribeEmail}
+                                                    onChange={(event) => setSubscribeEmail(event.target.value)}
+                                                    placeholder={unlockedEmail || 'Մուտքագրեք էլ. հասցեն'}
+                                                    className="mt-3 w-full rounded-full border border-black/20 px-4 py-2.5 text-sm text-black placeholder-black/35 focus:outline-none focus:ring-2 focus:ring-black/30"
+                                                />
                                                 <button
                                                     type="button"
-                                                    onClick={() => setSubscribeSubmitted(true)}
-                                                    className="mt-3 inline-flex items-center justify-center rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-black/85 transition-colors"
+                                                    onClick={handleSubscribeSubmit}
+                                                    disabled={subscribeProcessing}
+                                                    className="mt-3 inline-flex items-center justify-center rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-black/85 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                                                 >
-                                                    Բաժանորդագրվել / 1800 ֏
+                                                    {subscribeProcessing ? 'Ուղարկվում է...' : 'Բաժանորդագրվել / 1800 ֏'}
                                                 </button>
+                                                {subscribeError && (
+                                                    <p className="mt-2 text-sm text-red-600">{subscribeError}</p>
+                                                )}
                                             </>
                                         )}
                                     </div>
@@ -757,7 +805,7 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
             {showTelegramBlock && (
                 <div className="fixed bottom-6 left-15 z-40">
 
-                    <div className="bg-black rounded-full w-18 h-18 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
+                    <div className="bg-black rounded-full w-25 h-25 md:w-30 md:h-30 shadow-lg flex items-center justify-center relative">
                         {/* Close Button */}
                         <button
                             onClick={() => setShowTelegramBlock(false)}
@@ -768,13 +816,14 @@ Different surfaces favor different types of serves. Fast courts like grass rewar
                         </button>
                         {showTelegramIcon ? (
                             <a href="https://t.me/tennisacademynovel" target='_blank'>
-                                <svg className="w-10 h-10 md:w-[70px] md:h-[70px]" viewBox="0 0 90 67" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M81.9945 0.58668C81.9945 0.58668 90.2865 -2.28985 89.5954 4.69602C89.3652 7.57259 87.2922 17.6404 85.6798 28.5302L80.1518 60.7886C80.1518 60.7886 79.6913 65.5143 75.5452 66.3362C71.399 67.158 65.1802 63.4597 64.0284 62.6377C63.107 62.0214 46.7535 52.7753 40.995 48.2551C39.3826 47.0223 37.5399 44.5566 41.2253 41.6801L65.4105 21.1335C68.1745 18.6678 70.9385 12.9148 59.4217 19.9007L27.175 39.4201C27.175 39.4201 23.4897 41.4746 16.5798 39.6255L1.60795 35.5161C1.60795 35.5161 -3.92008 32.4342 5.52363 29.352C28.5571 19.695 56.8882 9.83261 81.9945 0.58668Z" fill="white" />
+                                <svg width="49" height="36" viewBox="0 0 49 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M44.4184 0.317818C44.4184 0.317818 48.9103 -1.24047 48.536 2.54394C48.4112 4.10225 47.2883 9.55625 46.4148 15.4555L43.4201 32.9306C43.4201 32.9306 43.1706 35.4906 40.9246 35.9359C38.6786 36.3811 35.3097 34.3776 34.6857 33.9323C34.1866 33.5985 25.3275 28.5896 22.208 26.1409C21.3345 25.4731 20.3363 24.1374 22.3327 22.5791L35.4344 11.4485C36.9317 10.1128 38.4291 6.99624 32.1901 10.7807L14.7213 21.3548C14.7213 21.3548 12.7249 22.4678 8.98165 21.4661L0.871065 19.2399C0.871065 19.2399 -2.1236 17.5704 2.99228 15.9007C15.4701 10.6693 30.8177 5.32656 44.4184 0.317818Z" fill="white" />
                                 </svg>
+
                             </a>
                         ) : (
 
-                            <span className="text-white text-xs font-medium text-center px-2">
+                            <span className="text-white text-xs font-medium text-center px-2 ">
                                 <a href="https://t.me/tennisacademynovel" target='_blank'>Միանալ քննարկմանը  </a>
                             </span>
 

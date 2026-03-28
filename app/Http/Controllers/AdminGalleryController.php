@@ -23,6 +23,7 @@ class AdminGalleryController extends Controller
             ],
             'image' => ['required', 'image', 'max:5120'],
             'alt' => ['nullable', 'string', 'max:255'],
+            'author_name' => ['nullable', 'string', 'max:255'],
         ]);
 
         $uploadDirectory = public_path('uploads/gallery');
@@ -41,6 +42,7 @@ class AdminGalleryController extends Controller
             'chapter_number' => $validated['chapter_number'],
             'image_path' => $imagePath,
             'alt' => $validated['alt'] ?? null,
+            'author_name' => $validated['author_name'] ?? null,
         ]);
 
         return redirect()->route('admin.gallery')->with('success', 'Gallery image uploaded successfully.');

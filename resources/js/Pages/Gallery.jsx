@@ -184,7 +184,7 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
         <>
             <Head title="պատկերասրահ" />
 
-            <SiteNav activePage="gallery" mobileTitle="ՊԱՏԿԵՌԱՍՌԱՀ" />
+            <SiteNav activePage="gallery" mobileTitle="ՊԱՏԿԵՐԱՍՐԱՀ" />
 
 
             {/* Hero Section (same style as Home) */}
@@ -192,7 +192,7 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: "url('/images/hero.png')",
+                        backgroundImage: "url('/images/gallery-hero.svg')",
                     }}
                 >
                     <div className="absolute inset-0 from-black/60 via-black/50 to-black/70"></div>
@@ -200,9 +200,7 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
 
                 <div className="relative h-[440px] flex flex-col items-center justify-center px-4">
                     <div className="text-center max-w-4xl">
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-4 leading-tight tracking-tight">
-                            Պատկերասրահ
-                        </h1>
+
                     </div>
                 </div>
             </section>
@@ -261,7 +259,11 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                                     <p className="text-base text-black font-medium">
                                         Գլուխ {filteredImages[currentIndex].chapter}
                                     </p>
-                                    {/* <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p> */}
+                                    {filteredImages[currentIndex].authorName && (
+                                        <p className="text-sm text-[#5B5753] mt-1 mb-3">
+                                            © {filteredImages[currentIndex].authorName}
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -270,19 +272,18 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                             {(() => {
                                 const isPrevDisabled = currentIndex <= 0;
                                 return (
-                            <button
-                                type="button"
-                                onClick={goToPreviousImage}
-                                disabled={isPrevDisabled}
-                                aria-label="Previous image"
-                                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                                    isPrevDisabled
-                                        ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
-                                        : 'bg-black text-white hover:bg-black/85'
-                                }`}
-                            >
-                                <ChevronLeft className="w-7 h-7" />
-                            </button>
+                                    <button
+                                        type="button"
+                                        onClick={goToPreviousImage}
+                                        disabled={isPrevDisabled}
+                                        aria-label="Previous image"
+                                        className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${isPrevDisabled
+                                            ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
+                                            : 'bg-black text-white hover:bg-black/85'
+                                            }`}
+                                    >
+                                        <ChevronLeft className="w-7 h-7" />
+                                    </button>
                                 );
                             })()}
 
@@ -292,32 +293,32 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                                         <img
                                             src={filteredImages[currentIndex].src}
                                             alt={filteredImages[currentIndex].alt}
-                                            className="w-full h-[520px] md:h-[620px] object-cover"
+                                            className="w-full h-auto"
                                         />
                                     </div>
-                                    <p className="mt-3 text-base text-black font-medium">
-                                        Գլուխ {filteredImages[currentIndex].chapter}
-                                    </p>
-                                    {/* <p className="text-sm text-[#5B5753]">© Illustrations By Ani Melikyan</p> */}
+                                    {filteredImages[currentIndex].authorName && (
+                                        <p className="mt-3 text-sm text-[#5B5753] text-center mb-3">
+                                            © {filteredImages[currentIndex].authorName}
+                                        </p>
+                                    )}
                                 </article>
                             )}
 
                             {(() => {
                                 const isNextDisabled = currentIndex >= filteredImages.length - 1;
                                 return (
-                            <button
-                                type="button"
-                                onClick={goToNextImage}
-                                disabled={isNextDisabled}
-                                aria-label="Next image"
-                                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                                    isNextDisabled
-                                        ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
-                                        : 'bg-black text-white hover:bg-black/85'
-                                }`}
-                            >
-                                <ChevronRight className="w-7 h-7" />
-                            </button>
+                                    <button
+                                        type="button"
+                                        onClick={goToNextImage}
+                                        disabled={isNextDisabled}
+                                        aria-label="Next image"
+                                        className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 rounded-full flex items-center justify-center transition-colors ${isNextDisabled
+                                            ? 'bg-[#A7A7A7] text-white cursor-not-allowed'
+                                            : 'bg-black text-white hover:bg-black/85'
+                                            }`}
+                                    >
+                                        <ChevronRight className="w-7 h-7" />
+                                    </button>
                                 );
                             })()}
                         </div>
@@ -354,23 +355,56 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                             onTouchEnd={handleLightboxTouchEnd}
                         >
                             <div className="min-h-full min-w-full flex items-center justify-center px-2">
-                                <img
-                                    src={filteredImages[currentIndex].src}
-                                    alt={filteredImages[currentIndex].alt}
-                                    onClick={handleLightboxImageTap}
-                                    className="max-h-[78vh] max-w-full w-auto object-contain select-none"
-                                    draggable="false"
-                                    style={{
-                                        transform: `scale(${lightboxZoom})`,
-                                        transformOrigin: 'center center',
-                                        transition: 'transform 120ms ease-out',
-                                    }}
-                                />
+                                <div className="relative w-full flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        onClick={goToPreviousImage}
+                                        disabled={currentIndex <= 0}
+                                        className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex <= 0
+                                            ? 'bg-white/50 text-black/40 cursor-not-allowed'
+                                            : 'bg-white/90 text-black'
+                                            }`}
+                                        aria-label="Previous image"
+                                    >
+                                        <ChevronLeft className="w-5 h-5" />
+                                    </button>
+
+                                    <img
+                                        src={filteredImages[currentIndex].src}
+                                        alt={filteredImages[currentIndex].alt}
+                                        onClick={handleLightboxImageTap}
+                                        className="max-h-[78vh] max-w-full w-auto object-contain select-none"
+                                        draggable="false"
+                                        style={{
+                                            transform: `scale(${lightboxZoom})`,
+                                            transformOrigin: 'center center',
+                                            transition: 'transform 120ms ease-out',
+                                        }}
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={goToNextImage}
+                                        disabled={currentIndex >= filteredImages.length - 1}
+                                        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full flex items-center justify-center shadow ${currentIndex >= filteredImages.length - 1
+                                            ? 'bg-white/50 text-black/40 cursor-not-allowed'
+                                            : 'bg-white/90 text-black'
+                                            }`}
+                                        aria-label="Next image"
+                                    >
+                                        <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="absolute bottom-0 left-0 right-0 z-20  border-t border-black/20">
+                        <div className="absolute bottom-0 left-0 right-0 z-20 ">
                             <div className="px-3 pt-2 pb-3">
+                                {filteredImages[currentIndex].authorName && (
+                                    <p className="mb-2 text-center text-xs text-white/90">
+                                        © {filteredImages[currentIndex].authorName}
+                                    </p>
+                                )}
                                 <div className="overflow-x-auto">
                                     <div className="flex items-center gap-2 min-w-max">
                                         {filteredImages.map((image, index) => (
@@ -396,13 +430,7 @@ export default function Gallery({ galleryImagesFromDb = [] }) {
                                 </div>
 
                                 <div className="mt-2 flex items-center justify-between text-white">
-                                    <button
-                                        type="button"
-                                        onClick={() => setLightboxZoom(1)}
-                                        className="px-3 py-1.5 rounded-full bg-white/20 text-sm font-medium"
-                                    >
-                                        {lightboxZoom.toFixed(1)}x
-                                    </button>
+
                                     <p className="text-xs">
                                         {currentIndex + 1} / {filteredImages.length}
                                     </p>
