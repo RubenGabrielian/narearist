@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminChapterController;
 use App\Http\Controllers\AdminGalleryController;
 use App\Http\Controllers\AdminSettingsController;
 use App\Http\Controllers\ChapterUnlockController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\SubscriptionController;
 use App\Models\AboutPageSetting;
@@ -56,6 +57,7 @@ Route::get('/gallery', function () {
 Route::post('/chapter-unlock', [ChapterUnlockController::class, 'store'])->name('chapter.unlock');
 Route::post('/subscribe', [SubscriptionController::class, 'store'])->name('subscribe');
 Route::post('/emails', [EmailController::class, 'store'])->name('emails.store');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');

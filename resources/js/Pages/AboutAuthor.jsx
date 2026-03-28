@@ -1,13 +1,29 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import SiteFooter from '../Components/SiteFooter';
 import SiteNav from '../Components/SiteNav';
 
 export default function AboutAuthor({ aboutImage, aboutContent }) {
+    const { props } = usePage();
+    const contactForm = useForm({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+    });
+
+    const handleContactSubmit = (event) => {
+        event.preventDefault();
+        contactForm.post('/contact', {
+            preserveScroll: true,
+            onSuccess: () => contactForm.reset(),
+        });
+    };
+
     return (
         <>
-            <Head title="Հևի坯ակի մասի坯" />
+            <Head title="ՀԵՂԻՆԱԿԻ ՄԱՍԻՆ" />
 
-            <SiteNav activePage="about" mobileTitle="ՀԵՂԻՆԱԻ ՄԱՍԻՆ" />
+            <SiteNav activePage="about" mobileTitle="ՀԵՂԻՆԱԿԻ ՄԱՍԻՆ" />
 
             {/* Main Content - About Author layout */}
             <main className="bg-white py-16 md:py-20">
@@ -44,36 +60,67 @@ export default function AboutAuthor({ aboutImage, aboutContent }) {
 
                     {/* Contact form card */}
                     <section className="bg-[#DB3106] rounded-[32px] px-6 sm:px-10 py-10 sm:py-12 text-black">
-                        <form className="space-y-4 max-w-4xl mx-auto">
+                        <form onSubmit={handleContactSubmit} className="space-y-4 max-w-4xl mx-auto">
+                            {props.errors?.contact && (
+                                <p className="text-sm text-white bg-black/20 rounded-md px-3 py-2">
+                                    {props.errors.contact}
+                                </p>
+                            )}
+                            {props.flash?.success && (
+                                <p className="text-sm text-white bg-black/20 rounded-md px-3 py-2">
+                                    {props.flash.success}
+                                </p>
+                            )}
                             <input
                                 type="text"
+                                value={contactForm.data.name}
+                                onChange={(event) => contactForm.setData('name', event.target.value)}
                                 placeholder="Անուն, ազգանուն"
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
+                            {contactForm.errors.name && (
+                                <p className="text-sm text-white">{contactForm.errors.name}</p>
+                            )}
                             <input
                                 type="email"
+                                value={contactForm.data.email}
+                                onChange={(event) => contactForm.setData('email', event.target.value)}
                                 placeholder="Էլ․ հասցե"
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
+                            {contactForm.errors.email && (
+                                <p className="text-sm text-white">{contactForm.errors.email}</p>
+                            )}
                             <input
                                 type="text"
+                                value={contactForm.data.subject}
+                                onChange={(event) => contactForm.setData('subject', event.target.value)}
                                 placeholder="Թեմա"
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30"
                             />
+                            {contactForm.errors.subject && (
+                                <p className="text-sm text-white">{contactForm.errors.subject}</p>
+                            )}
 
                             <textarea
                                 rows={5}
+                                value={contactForm.data.message}
+                                onChange={(event) => contactForm.setData('message', event.target.value)}
                                 placeholder="Նամակդ գրի այստեղ..."
                                 className="w-full rounded-[6px] bg-[white] border border-black/10 px-4 py-3 text-sm md:text-base placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-black/30 resize-none"
                             />
+                            {contactForm.errors.message && (
+                                <p className="text-sm text-white">{contactForm.errors.message}</p>
+                            )}
 
                             <div className="pt-4 flex justify-center">
                                 <button
                                     type="submit"
-                                    className="inline-flex items-center justify-center px-15 py-3 rounded-full bg-white text-black font-bokonique text-sm md:text-base tracking-wide hover:bg-[#FEEFE9] transition-colors"
+                                    disabled={contactForm.processing}
+                                    className="inline-flex items-center justify-center px-15 py-3 rounded-full bg-white text-black font-bokonique text-sm md:text-base tracking-wide hover:bg-[#FEEFE9] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                                     style={{ boxShadow: '-3px 4px 0 2px rgba(0, 0, 0, 0.85)' }}
                                 >
-                                    ՈԻՂԱՐԿԵԼ
+                                    {contactForm.processing ? 'ՈՒՂԱՐԿՎՈՒՄ Է...' : 'ՈՒՂԱՐԿԵԼ'}
                                 </button>
                             </div>
                         </form>
